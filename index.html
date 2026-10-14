@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>¿Cuánto conocés Neuquén?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Tótem vertical 9:16 en una sala oscura; todo dentro escala con el ancho del tótem (cqw). Un solo look, sin tema oscuro. */
+:root {
+  --sala: #14232E;
+  --pantalla: #E8F6EE;
+  --tinta: #1F3A4D;
+  --pendiente: #F6D44A;
+  --lograda: #9FE0BF;
+  --borde-region: #2F7A5A;
+  --coral: #E8634A;
+  --cielo: #2BA6B5;
+  --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--sala);
+  color: var(--tinta);
+  font-family: var(--texto);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow: hidden;
+}
+.totem {
+  width: min(100%, calc((100dvh - 32px) * 9 / 16));
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+  background: var(--pantalla);
+  border-radius: 1.4cqw;
+  box-shadow: 0 0 0 1.2cqw #0B151C, 0 2cqw 6cqw rgba(0,0,0,.55);
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+.pantalla { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 4cqw; gap: 2.4cqw; }
+.pantalla[hidden] { display: none !important; }
+
+.chip-proto {
+  position: absolute; top: 2.2cqw; right: 2.6cqw; z-index: 5;
+  font: 700 2.3cqw/1 var(--texto); letter-spacing: .04em; text-transform: uppercase;
+  background: var(--tinta); color: var(--pantalla); padding: 1cqw 1.8cqw; border-radius: 99px; opacity: .85;
+}
+#reinicio-oculto {
+  position: absolute; top: 0; left: 0; width: 16cqw; height: 16cqw; z-index: 6; border-radius: 0 0 50% 0;
+}
+#reinicio-oculto.sosteniendo { background: radial-gradient(circle at 0 0, rgba(232,99,74,.35), transparent 70%); }
+
+/* ---------- Inicio ---------- */
+#inicio { justify-content: center; align-items: center; text-align: center; gap: 6cqw; }
+.titulo { font: 800 13cqw/0.95 var(--display); margin: 0; text-wrap: balance; }
+.titulo span { color: var(--coral); }
+.bajada { font-size: 4.2cqw; line-height: 1.35; max-width: 70cqw; margin: 0; }
+.boton {
+  font: 800 5.6cqw/1 var(--display); border: 0; cursor: pointer;
+  background: var(--pendiente); color: var(--tinta);
+  padding: 3.6cqw 9cqw; border-radius: 99px;
+  box-shadow: 0 1.2cqw 0 #C9A420;
+}
+.boton:active { transform: translateY(0.8cqw); box-shadow: 0 0.4cqw 0 #C9A420; }
+.boton:focus-visible, .opcion:focus-visible { outline: 0.8cqw solid var(--cielo); outline-offset: 0.6cqw; }
+.pulso { animation: pulso 1.8s ease-in-out infinite; }
+@keyframes pulso { 50% { transform: scale(1.05); } }
+
+/* ---------- Mapa ---------- */
+.cabecera { display: flex; flex-direction: column; gap: 1.6cqw; padding-top: 5cqw; }
+.barra { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1cqw; }
+.barra i { height: 1.6cqw; border-radius: 99px; background: #CFE6DA; transition: background .3s; }
+.barra i.on { background: var(--borde-region); }
+.cuenta { font: 800 4.4cqw/1 var(--display); display: flex; justify-content: space-between; align-items: baseline; }
+.cuenta small { font: 400 3.2cqw/1.3 var(--texto); }
+.consigna { font-size: 3.6cqw; margin: 0; }
+
+.zona-mapa { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 30cqw; grid-template-rows: minmax(0, 1fr); gap: 2cqw; align-items: center; }
+#mapa { width: 100%; height: 100%; min-height: 0; overflow: visible; }
+#mapa .region { stroke: var(--tinta); stroke-width: 1.4; stroke-linejoin: round; fill: var(--pendiente); fill-rule: evenodd; transition: fill .4s; }
+#mapa .region.lograda { fill: var(--lograda); stroke: var(--borde-region); }
+#mapa .region.encima { fill: #FFE98A; }
+#mapa .hueco { pointer-events: none; }
+#mapa .hueco * { fill: rgba(255,255,255,.7); stroke: currentColor; stroke-width: 7; stroke-dasharray: 12 8; }
+#mapa .num { pointer-events: none; }
+#mapa .num circle { fill: var(--pantalla); stroke: var(--tinta); stroke-width: 1.2; }
+#mapa .num text { font: 800 10px var(--display); fill: var(--tinta); text-anchor: middle; dominant-baseline: central; }
+#mapa .colocada { pointer-events: none; animation: aparece .4s ease-out; transform-box: fill-box; transform-origin: center; }
+@keyframes aparece { from { transform: scale(0); } }
+
+.leyenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.3cqw; font-size: 2.9cqw; line-height: 1.2; }
+.leyenda li { display: flex; gap: 1.4cqw; align-items: center; }
+.leyenda b {
+  flex: none; width: 4.4cqw; height: 4.4cqw; border-radius: 50%; display: grid; place-items: center;
+  border: 0.35cqw solid var(--tinta); font: 800 2.8cqw/1 var(--display);
+}
+.leyenda li.ok b { background: var(--borde-region); border-color: var(--borde-region); color: var(--pantalla); }
+.leyenda li.ok { text-decoration: line-through; text-decoration-thickness: 0.3cqw; opacity: .6; }
+
+.tarjeta {
+  background: #FFFFFF; border-radius: 2cqw; padding: 2.6cqw 3.2cqw;
+  border: 0.4cqw solid var(--tinta); min-height: 17cqw;
+}
+.tarjeta .eti { font: 700 2.6cqw/1 var(--texto); letter-spacing: .05em; text-transform: uppercase; color: var(--borde-region); }
+.tarjeta h3 { font: 800 4.8cqw/1.05 var(--display); margin: 1cqw 0 0.6cqw; }
+.tarjeta p { margin: 0; font-size: 3.3cqw; line-height: 1.35; }
+.tarjeta.nueva { animation: sube .35s ease-out; }
+@keyframes sube { from { transform: translateY(2cqw); opacity: 0; } }
+.tarjeta.error { border-color: var(--coral); }
+.tarjeta.error .eti { color: var(--coral); }
+
+.bandeja { display: flex; flex-wrap: wrap; justify-content: center; gap: 2.4cqw; min-height: 22cqw; align-content: center; }
+.figura {
+  width: 16cqw; display: flex; flex-direction: column; align-items: center; gap: 0.6cqw;
+  touch-action: none; cursor: grab; background: none; border: 0; padding: 0; color: var(--tinta);
+}
+.figura svg { width: 13cqw; height: 13cqw; filter: drop-shadow(0 0.8cqw 0 rgba(31,58,77,.18)); }
+.figura span { font: 700 2.6cqw/1.1 var(--texto); text-align: center; }
+.figura.arrastrando { position: absolute; z-index: 50; cursor: grabbing; pointer-events: none; }
+.figura.arrastrando svg { transform: scale(1.15); filter: drop-shadow(0 2cqw 1.5cqw rgba(31,58,77,.35)); }
+.figura.sacude { animation: sacude .4s; }
+@keyframes sacude { 25% { transform: translateX(-2cqw); } 75% { transform: translateX(2cqw); } }
+
+/* ---------- Preguntas ---------- */
+#preguntas { justify-content: center; gap: 4cqw; }
+#preguntas .eti { font: 700 3cqw/1 var(--texto); letter-spacing: .05em; text-transform: uppercase; color: var(--borde-region); }
+#preguntas h2 { font: 800 7cqw/1.05 var(--display); margin: 0; text-wrap: balance; }
+.opciones { display: flex; flex-direction: column; gap: 2.4cqw; }
+.opcion {
+  font: 700 4.6cqw/1.2 var(--texto); text-align: left; cursor: pointer;
+  background: #FFFFFF; color: var(--tinta); border: 0.5cqw solid var(--tinta);
+  border-radius: 2.4cqw; padding: 3.4cqw 4cqw;
+}
+.opcion.bien { background: var(--lograda); border-color: var(--borde-region); }
+.opcion.mal { background: #FBD5CC; border-color: var(--coral); }
+.opcion:disabled { cursor: default; }
+.devolucion { font-size: 4cqw; min-height: 6cqw; margin: 0; }
+#siguiente { align-self: center; }
+
+/* ---------- Final ---------- */
+#final { justify-content: center; align-items: center; text-align: center; gap: 5cqw; }
+#final h2 { font: 800 12cqw/0.95 var(--display); margin: 0; text-wrap: balance; }
+#final h2 span { color: var(--coral); }
+#final p { font-size: 4.2cqw; line-height: 1.35; max-width: 72cqw; margin: 0; }
+.papelitos { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.papelitos i { position: absolute; top: -4cqw; width: 2cqw; height: 3.2cqw; border-radius: 0.4cqw; animation: cae 2.8s linear forwards; }
+@keyframes cae { to { transform: translateY(190cqw) rotate(540deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="totem" id="totem">
+  <div id="reinicio-oculto" aria-hidden="true"></div>
+  <div class="chip-proto">Prototipo · contenido de ejemplo</div>
+
+  <section class="pantalla" id="inicio">
+    <h1 class="titulo">¿Cuánto conocés <span>Neuquén?</span></h1>
+    <p class="bajada">Ubicá cada figura en su región del mapa y descubrí algo de cada rincón de la provincia.</p>
+    <button class="boton pulso" id="jugar" type="button">Tocá para jugar</button>
+  </section>
+
+  <section class="pantalla" id="juego" hidden>
+    <header class="cabecera">
+      <div class="barra" id="barra"></div>
+      <div class="cuenta"><span id="cuenta">0 de 7 ubicadas</span><small>Arrastrá con el dedo</small></div>
+      <p class="consigna">Cada región tiene marcada la silueta de su figura. Arrastrá cada figura hasta su lugar.</p>
+    </header>
+    <div class="zona-mapa">
+      <svg id="mapa" viewBox="-4 -4 308 492" aria-label="Mapa de las regiones de Neuquén"></svg>
+      <ol class="leyenda" id="leyenda"></ol>
+    </div>
+    <div class="tarjeta" id="tarjeta"></div>
+    <div class="bandeja" id="bandeja"></div>
+  </section>
+
+  <section class="pantalla" id="preguntas" hidden>
+    <div class="eti" id="nro-pregunta">Pregunta 1 de 3</div>
+    <h2 id="texto-pregunta"></h2>
+    <div class="opciones" id="opciones"></div>
+    <p class="devolucion" id="devolucion"></p>
+    <button class="boton" id="siguiente" type="button" hidden>Siguiente</button>
+  </section>
+
+  <section class="pantalla" id="final" hidden>
+    <div class="papelitos" id="papelitos"></div>
+    <h2>¡Sos un experto en <span>Neuquén!</span></h2>
+    <p id="resumen"></p>
+    <button class="boton" id="otra-vez" type="button">Jugar de nuevo</button>
+  </section>
+</div>
+
+<script>
+/* Todo el contenido vive acá. Para otro evento se cambia este objeto, no el código.
+   Regiones: forma = contorno real (departamentos agrupados, aproximado); pista = dónde va la silueta de su figura. */
+const CONFIG = {
+  segundosInactividad: 60,
+  tamPista: 34,
+  regiones: [
+    { id: 1, nombre: "Alto Neuquén", pista: [102.8, 99.1],
+      forma: "M106.71 2.84 L109.11 3.56 L111.51 6.7 L112.77 6.14 L112.63 11.98 L112.77 6.14 L114.72 6.08 L116.77 4.52 L116.93 0.44 L118.52 0.84 L118.77 8.01 L120.48 10.9 L120.49 16.03 L122.51 21.68 L125.78 22.29 L130.03 20.44 L131.9 21.2 L133.93 30.28 L133.25 32.41 L134.93 36.86 L138.18 40.39 L139.42 44.41 L141.7 46.23 L145.49 53.12 L144.34 111.09 L147.17 113.6 L146.65 116.11 L141.68 124.22 L140.77 128.11 L142.37 132.12 L141.16 133.73 L142.29 137.45 L143.99 138.13 L145.23 140.01 L146.31 147.49 L103.12 183.36 L97.09 179.12 L95.05 179.44 L88.32 177.59 L80.3 177.48 L76.8 179.02 L71.25 178.89 L70 177.36 L64.62 175.1 L64.98 172.5 L62.91 169.64 L59.24 169.24 L60.52 168.81 L61.05 167.34 L63.14 166.7 L63.46 165.5 L61.45 164.42 L60.19 162.16 L61.22 159.43 L57.08 153.66 L57.93 150.36 L57.43 148.81 L59.61 145.58 L61.89 145.06 L63.32 143.01 L62.99 139.62 L61.54 138.33 L62.96 137.35 L64.08 131.49 L62.26 128.77 L61.39 124.88 L59.25 124.42 L58.1 123.09 L57.83 121.44 L59.05 120.46 L57.36 118.86 L56.4 112.72 L58.87 112.83 L61.32 108.84 L60.17 107.91 L64.33 106.24 L62.78 100.37 L66.04 97.19 L63.75 94.94 L63.92 93.22 L62.3 92.8 L62.15 89.22 L60.4 85.83 L56.25 83.99 L59.11 83.04 L61.78 84.25 L65.04 83.3 L66.4 80.13 L65.84 78.9 L62.16 79.25 L61.77 76.58 L64.06 73.44 L62.54 71.91 L60.76 72.7 L59.45 70.76 L60.57 68.65 L61.4 68.48 L61.5 69.36 L63.07 68.06 L63.33 63.14 L64.62 59.66 L64.49 54.98 L66.53 54.86 L68.15 58.43 L72.34 56.15 L72.16 53.54 L70.98 53.42 L68.71 49.18 L69.45 48.05 L68.91 44.54 L69.96 42.61 L69.2 39.98 L70.41 38.61 L70.16 35.42 L71.4 35.02 L72.24 36.51 L76.36 38.07 L78.03 36.9 L78.5 35.23 L81.43 34.43 L81.85 27.66 L83.29 27.76 L82.97 29.09 L84.45 29.83 L86.89 27.58 L88.9 30.81 L90.25 30.8 L92.15 28.58 L93.12 29.53 L92.81 30.92 L94.79 30.7 L97.33 27.03 L97.15 25.37 L94.83 22.68 L96.93 18.66 L96.87 16.76 L95.31 15.7 L98.29 12.88 L100.89 12.46 L101.45 11.29 L100.8 10.34 L105.54 6.31 L104.83 3.03 L105.66 2.17 L106.71 2.84 Z" },
+    { id: 2, nombre: "Vaca Muerta", pista: [211.5, 165.0],
+      forma: "M145.67 53.18 L147.01 53.67 L147.76 56.57 L149.69 56.42 L152.67 59.18 L152.9 61.34 L154.75 63.17 L154.51 66.02 L158.12 67.81 L160.02 71.19 L166.93 73.67 L167.46 75.02 L165.42 78 L166.1 78.8 L165.68 85.21 L166.57 86.18 L166.78 91.95 L170.52 95.95 L173.79 97.25 L176.9 100 L184.55 102.83 L189.15 102.81 L191.82 101.58 L194.39 102.71 L195.86 101.56 L197.82 101.97 L199.03 100.77 L201.59 101.08 L203.95 100.08 L207.78 103.25 L211.39 103.35 L214.41 105.69 L219.31 107.69 L221.46 110.8 L220.63 116.35 L222.43 121.41 L225.7 122.76 L227.42 122.16 L232.38 122.85 L234.45 124.91 L242.01 121.5 L245.72 123.79 L247.26 128.88 L252.02 129.37 L253.81 128.56 L256.7 130.24 L261.87 130.02 L266.95 138.8 L270.13 140.28 L273.18 139.05 L273.47 140.03 L277.92 140.26 L281.11 141.95 L281 248.83 L278.65 247.74 L278.44 245.59 L276.32 245.66 L274.75 242.86 L270.45 240.73 L268.76 237.85 L265.93 237.35 L264.55 235.69 L261.74 234.78 L258.77 231.27 L258.84 230.24 L254.11 228.28 L252.98 225 L248.8 223.28 L248.1 221.95 L245.18 222.13 L242.63 218.89 L240.44 219.66 L236.89 218.63 L234.92 219.11 L229.11 225.42 L227.45 229.76 L224.77 230.51 L222.04 234.93 L220.79 235.03 L220.49 238.08 L219.63 237.39 L218.01 239.01 L216.12 239.15 L215.8 241.27 L213.51 242.21 L211 241.46 L207.09 243.82 L205.85 242.96 L206.12 241.5 L203.89 240.91 L200.53 242.42 L199.5 240.48 L198.05 240.91 L194.22 236.89 L193.18 232.02 L189.31 229.95 L187.9 232.18 L187.67 230.67 L183.61 230.49 L183.24 228.25 L181.17 226.57 L180.92 225.25 L178.25 223.66 L176.14 223.99 L175.07 221.75 L173.54 221.04 L173.71 219.52 L172.24 218.43 L170.99 218.87 L171.46 217.61 L170.62 216.34 L171.8 214.57 L170.07 214.85 L168.4 211.97 L169.84 211.56 L168.96 209.55 L170.08 206.38 L168.28 205.32 L168.56 203.26 L167.07 201.62 L168.89 200.42 L168.29 198.84 L166.84 199.09 L166.53 194.82 L164.92 194.72 L165.6 193.11 L162.75 191.44 L163.81 189.19 L162.2 188.76 L162.09 187.2 L160.82 186.3 L162 185.15 L162.9 186.53 L163.67 186.23 L162.8 184.92 L163.39 182.83 L162.23 182.2 L164.21 179.91 L162.63 178.74 L162.47 177.38 L160.85 177.88 L161.71 176.04 L159.89 174.64 L159.93 170.57 L158.99 168.52 L157.22 167.81 L158.34 166.07 L160.54 166.48 L159.18 165.21 L160.05 163.72 L159.19 163.29 L159.89 161.68 L158.44 160.27 L159.12 159.07 L158.15 159.1 L158.84 155.87 L157.37 155.3 L157.4 153.12 L155.6 150.72 L150.1 150.65 L149.74 149.67 L146.05 149.19 L145.23 140.01 L143.99 138.13 L142.29 137.45 L141.16 133.73 L142.37 132.12 L140.77 128.19 L141.16 125.42 L145.49 116.89 L146.65 116.11 L147.16 113.8 L146.55 112.34 L144.34 111.09 L145.67 53.18 Z" },
+    { id: 3, nombre: "Del Pehuén", pista: [120.4, 246.4],
+      forma: "M101.44 285.79 L97.11 284.48 L95.24 281.04 L94.46 283.21 L92.58 284.53 L93.69 287.38 L92.95 290.51 L93.68 293.15 L92.09 302.89 L93.7 306.35 L91.23 307.46 L89.82 309.77 L89.26 314.61 L87.13 315.93 L88.75 317.74 L90.82 318.03 L89.77 320.11 L90.49 321.96 L91.63 321.93 L91.85 324.73 L88.19 324.75 L85.63 326.5 L85.61 330.32 L84.8 329.73 L82.09 330.64 L82.05 331.87 L78.45 332 L76.24 330.32 L73.98 331.32 L72.93 330.01 L71.69 330.94 L68.12 329.5 L67.3 330.62 L66.55 329.77 L63.27 329.81 L61.12 330.93 L59.84 330.17 L57.76 324.82 L55.58 324.84 L54.98 323.2 L51.58 326.24 L50.11 325.09 L47.84 326.45 L45.64 324.8 L44.28 325.19 L43.53 323.85 L39.64 324.05 L39 320.99 L37.96 320.4 L39.38 319.25 L38.5 315.55 L40.26 315.75 L42.77 313.67 L43.88 310.57 L43.36 308.34 L44.76 307.14 L43.36 303.95 L44.13 302.78 L43.41 300.62 L44.24 300.19 L42.69 295.69 L41.19 294.35 L42.24 289 L41.45 286.47 L43.1 284.14 L41.18 282.17 L41.79 280.56 L39.66 277.89 L40.25 272.85 L44.65 270.74 L47.65 267.74 L50.64 267.57 L52.79 265.51 L52.74 263.09 L55.06 260.61 L56.92 261.86 L59.03 261.82 L59.43 260.54 L61.8 260.29 L62.92 258.49 L64.17 258.6 L65.93 255.98 L67.79 257.42 L69.05 256.25 L72.92 257.48 L74.44 256.48 L78.69 256.72 L81.85 250.86 L80.58 249.67 L80.31 247.48 L86.09 240.72 L84.98 235.04 L83.14 232.66 L79.81 231.72 L76.71 226.51 L74.27 224.61 L73.22 211.12 L72.27 210.29 L72.38 208.26 L70.63 207.06 L71.65 206.16 L71.49 203.58 L73.27 202.54 L73.32 199.51 L69.82 194.77 L74.39 192.96 L73.7 190.91 L72.19 190.69 L68.93 187.12 L69.23 185.57 L68.33 184.54 L69.16 182.2 L67.87 181.28 L68.43 180.19 L64.51 178.35 L64.54 175.21 L66.07 175.19 L71.25 178.89 L76.8 179.02 L80.82 177.47 L88.23 177.58 L95.05 179.44 L96.96 179.08 L103.12 183.36 L146.31 147.49 L145.74 148.57 L146.76 149.61 L149.63 149.64 L150.1 150.65 L153.01 151.07 L155.6 150.72 L157.4 153.12 L157.37 155.3 L158.84 155.87 L158.15 159.1 L159.07 158.97 L158.49 160.49 L159.89 161.68 L159.21 165.33 L160.53 166.27 L159.96 166.95 L158.34 166.07 L157.22 167.81 L158.99 168.52 L159.93 170.57 L159.89 174.64 L161.71 176.04 L160.85 177.88 L162.59 177.46 L162.63 178.74 L164.28 180.17 L162.23 182.2 L163.39 182.83 L162.8 184.92 L163.67 186.23 L162.9 186.53 L162 185.15 L160.82 186.3 L162.09 187.2 L162.2 188.76 L163.81 189.19 L162.75 191.44 L165.6 193.11 L164.92 194.72 L166.53 194.82 L166.84 199.09 L168.29 198.84 L168.89 200.42 L167.07 201.62 L168.56 203.26 L168.28 205.32 L170.08 206.38 L168.96 209.55 L169.84 211.56 L168.4 211.97 L170.07 214.85 L171.8 214.57 L170.62 216.34 L171.46 217.61 L170.99 218.87 L172.24 218.43 L173.71 219.52 L173.54 221.04 L175.07 221.75 L176.14 223.99 L178.25 223.66 L180.92 225.25 L181.17 226.57 L183.24 228.25 L183.61 230.49 L187.67 230.67 L187.9 232.18 L189.31 229.95 L193.18 232.02 L194.31 237.04 L198.05 240.91 L199.5 240.48 L200.36 242.39 L182.94 259.71 L202.73 279.72 L177.4 304.22 L170.4 297.04 L156.39 310.53 L154.78 309.89 L152.93 307.15 L150.27 306.82 L149.33 305.5 L144.81 303.48 L144.06 300.28 L137.36 298.19 L130.6 298.87 L127.89 297.15 L126.24 294.17 L123.38 291.9 L102.45 291.59 L101.44 285.79 Z" },
+    { id: 4, nombre: "De la Comarca", pista: [192.0, 318.8],
+      forma: "M212.1 288.97 L238 315.43 L235.88 317.76 L232.95 318.69 L230.34 320.84 L229.73 324.16 L224.37 329.6 L220.77 330.71 L215.83 329.55 L210.96 333.99 L207.24 335.03 L203.4 337.46 L203.77 340.62 L202.14 342.21 L202.43 342.94 L200.61 343.03 L198.41 345.59 L198.02 348.58 L196.13 350.49 L194.86 350.53 L194.92 351.64 L193.41 352.21 L192.35 354.15 L188.56 355.62 L186.08 358.57 L184.4 358.56 L146.59 319.94 L170.4 297.04 L177.4 304.22 L202.73 279.72 L212.1 288.97 Z" },
+    { id: 5, nombre: "Confluencia", pista: [240.0, 263.5],
+      forma: "M237 218.67 L237.95 219.55 L243.52 219.23 L245.18 222.13 L248.1 221.95 L248.8 223.28 L252.7 224.8 L254.11 228.28 L258.84 230.24 L258.77 231.27 L261.74 234.78 L264.55 235.69 L265.93 237.35 L268.76 237.85 L270.45 240.73 L274.75 242.86 L276.32 245.66 L278.44 245.59 L278.65 247.74 L280.93 248.74 L281.72 250.41 L285.1 251.62 L288.85 255.13 L290.84 255.21 L291.1 259.74 L293.86 265.01 L292.9 266.04 L294.6 267.28 L294.84 270.4 L296.29 271.32 L297.03 274.08 L300 277.15 L299.16 277.63 L299.9 279.13 L298.18 278.73 L297.29 279.7 L296.34 278.18 L293.91 279.23 L288.82 277.28 L287.64 277.82 L286.58 276.55 L283.96 277.24 L282.53 278.9 L277.19 277.33 L276.89 278.75 L273.23 279.91 L271.98 281.51 L268.91 283.02 L267.6 282.55 L261.8 286.69 L261.03 286.17 L260.54 287.28 L258.97 287.34 L250.03 296.41 L250.6 299.01 L249.67 300.76 L242.93 305.83 L239.31 307.31 L238.1 309.99 L238.88 313.35 L238 315.43 L182.94 259.71 L200.36 242.39 L204.22 240.91 L206.39 241.64 L205.8 242.82 L207.09 243.82 L211 241.46 L213.51 242.21 L215.8 241.27 L216.01 239.24 L218.01 239.01 L219.49 237.43 L220.32 238.22 L221.23 236.67 L220.79 235.03 L222.04 234.93 L224.77 230.51 L227.45 229.76 L229.11 225.42 L234.92 219.11 L237 218.67 Z" },
+    { id: 6, nombre: "Del Limay", pista: [121.9, 355.3],
+      forma: "M168.6 342.66 L184.4 358.56 L180.2 358.52 L179.21 360.12 L176.77 361.29 L175.46 360.64 L173.59 361.97 L171.51 361.74 L166.91 365.14 L164.31 365.23 L163.17 366.7 L158.75 367.96 L157.79 369.73 L154.06 370.97 L150.94 374.4 L148.3 381.12 L149.1 386.51 L150.93 388.25 L152.47 393.85 L151.59 394.51 L149.41 393.96 L148.55 396.2 L144.26 400.63 L144.96 407.29 L143.97 412.79 L140.92 415.81 L137.14 416.6 L135.48 417.92 L135.81 423.29 L131.32 425.21 L126.14 425.36 L116.56 428.45 L113.33 426.05 L108.95 425.64 L105.37 423.95 L102.72 424.5 L99.46 420.52 L97.53 415.09 L98.44 412.88 L96.27 411.17 L98.98 406.24 L97.82 403.16 L100.39 399.54 L98.54 398.4 L98.24 396.05 L96.12 394.85 L95.02 391.85 L92.94 390.56 L91.73 386.57 L89.56 385.92 L85.22 379.05 L86.15 377.02 L84.79 375.56 L84.58 372.12 L85.92 371.62 L84.53 367.06 L85.63 364.67 L83.49 363.09 L82.54 356.64 L78.9 355.09 L77.83 352.77 L81.99 350.99 L80.54 348.7 L82.08 344.39 L77.95 343.87 L77.16 342.24 L77.97 337.26 L77.27 336.2 L76.26 336.37 L75.23 333.93 L76.46 332.99 L76.24 330.32 L78.3 331.97 L82.05 331.87 L82.29 330.54 L85 329.7 L85.67 330.27 L85.9 326.29 L88.19 324.75 L91.85 324.73 L91.63 321.93 L90.49 321.96 L89.77 320.11 L90.82 318.03 L88.75 317.74 L87.13 315.93 L89.26 314.61 L89.82 309.77 L91.23 307.46 L93.7 306.35 L92.09 302.89 L93.68 293.15 L92.95 290.51 L93.69 287.38 L92.55 284.75 L94.46 283.21 L95.07 281.2 L97.11 284.48 L101.44 285.79 L102.45 291.59 L123.38 291.9 L126.24 294.17 L127.89 297.15 L130.46 298.81 L137.36 298.19 L142.25 299.45 L144.27 300.53 L143.97 301.75 L145.62 304.08 L149.33 305.5 L150.27 306.82 L152.93 307.15 L154.78 309.89 L156.39 310.53 L146.59 319.94 L168.6 342.66 Z" },
+    { id: 7, nombre: "De los Lagos del Sur", pista: [50.1, 406.0],
+      forma: "M54.76 323.19 L55.58 324.84 L57.76 324.82 L59.84 330.17 L61.12 330.93 L63.27 329.81 L66.55 329.77 L67.3 330.62 L68.12 329.5 L71.69 330.94 L72.93 330.01 L73.98 331.32 L76.24 330.32 L76.46 332.99 L75.23 333.93 L76.26 336.37 L77.27 336.2 L77.97 337.26 L77.19 342.38 L78.02 343.95 L82.08 344.39 L80.54 348.7 L81.99 350.99 L77.83 352.77 L78.9 355.09 L82.54 356.64 L83.49 363.09 L85.63 364.67 L84.53 367.06 L85.92 371.62 L84.58 372.12 L84.79 375.56 L86.15 377.02 L85.22 379.05 L89.56 385.92 L91.73 386.57 L92.94 390.56 L95.02 391.85 L96.12 394.85 L98.24 396.05 L98.54 398.4 L100.39 399.54 L97.82 403.16 L98.98 406.24 L96.27 411.17 L98.44 412.88 L97.53 415.09 L99.46 420.52 L102.72 424.5 L105.37 423.95 L108.45 425.37 L101.53 430.07 L99.24 433.77 L95.69 433.98 L93.21 432.76 L83.53 434.19 L82.2 436.59 L74.84 439.32 L72.17 442.29 L70.81 446.66 L65.74 447.13 L63.98 450.12 L64.13 454.46 L65.99 456.46 L65.37 457.79 L69.5 461.02 L68.96 462.03 L70.04 462.56 L70.63 466.86 L69.65 468.27 L70.25 469.18 L68.51 471.48 L65.28 472.5 L66.31 473.15 L64.39 474.05 L62.22 478.85 L59.83 478.77 L54.86 482.54 L49.89 483.02 L45.77 481.92 L38.53 477.37 L31.4 475.58 L26.01 476.71 L13.65 475.15 L7.92 476.33 L6.9 473.35 L4.46 471.96 L4.3 470.62 L4.62 469.59 L5.95 470.22 L8.25 469.44 L7.29 462.98 L8.11 461.62 L6.46 461.81 L2.92 457.25 L2.34 456.11 L3.41 452.67 L0.71 450.23 L0.19 446.28 L7.48 440.72 L7.38 439.34 L9.21 437.32 L9.46 434.41 L10.72 432.47 L8.28 433.9 L5.69 430.4 L8.09 430.28 L8.05 428.35 L9.3 427.39 L8.32 425.84 L9.46 423.87 L9.39 420.28 L11.03 418.44 L10.61 417.38 L11.91 415.87 L13.14 415.96 L14.6 417.46 L15.64 416.78 L17.3 419.15 L20.67 415.73 L20.63 412.69 L23.37 411.75 L23.42 410.81 L22.08 409.82 L22.24 406.64 L21.24 404.99 L18.83 403.53 L16.51 406.26 L15.49 405.47 L15.42 403.3 L12.6 401.25 L11.97 399.09 L10.68 398.96 L10.32 396.62 L12.55 394.53 L10.36 393.19 L11.87 391.26 L11.8 389.82 L12.64 389.81 L12.32 387.22 L10.18 386.7 L11.56 384.32 L20.06 387.85 L22.14 386.57 L22.66 383.64 L20.96 379.67 L21.99 379.04 L23.8 373.78 L26.15 373.91 L26.59 372.35 L25.74 370.56 L27.81 369.7 L27.46 368.45 L28.21 367.99 L26.7 364.4 L25.17 365.16 L24.38 362.35 L22.44 363.33 L20.72 361.12 L20.7 359.54 L22.6 357.87 L21.34 357.35 L21.55 354.13 L19.16 349.85 L20.58 348.19 L19.79 347.08 L22.24 346.76 L22.41 345.77 L21.03 345.35 L20.55 343.43 L18.79 342.56 L18.92 341.09 L20.49 340.12 L20.2 336.58 L22.05 334.29 L23.42 336.6 L25.85 337.05 L26.9 340.54 L29.91 341.25 L32.13 340.16 L35.1 341.46 L38.17 336.15 L37.16 335.31 L37.71 333.73 L36.81 333.18 L34.93 333.97 L32.64 330.98 L33.91 328.53 L37.28 327.48 L38.12 323.68 L43.53 323.85 L44.28 325.19 L45.64 324.8 L47.84 326.45 L50.11 325.09 L51.58 326.24 L54.76 323.19 Z" }
+  ],
+  figuras: [
+    { id: "crianceros", etiqueta: "Crianceros", forma: "circulo",   color: "#E8634A", region: 1,
+      titulo: "Trashumancia", texto: "En el norte neuquino, los crianceros llevan el ganado de la invernada a la veranada, como hace siglos." },
+    { id: "torre",      etiqueta: "Torre",      forma: "cuadrado",  color: "#1F3A4D", region: 2,
+      titulo: "Vaca Muerta", texto: "Una de las formaciones de gas y petróleo no convencional más grandes del mundo." },
+    { id: "araucaria",  etiqueta: "Araucaria",  forma: "triangulo", color: "#2F7A5A", region: 3,
+      titulo: "El pehuén", texto: "La araucaria, árbol sagrado para el pueblo mapuche, le da nombre a la región." },
+    { id: "dinosaurio", etiqueta: "Dinosaurio", forma: "hexagono",  color: "#8A6BD1", region: 4,
+      titulo: "Tierra de dinosaurios", texto: "La Comarca guarda algunos de los yacimientos de dinosaurios más importantes del mundo." },
+    { id: "kayak",      etiqueta: "Kayak",      forma: "gota",      color: "#2BA6B5", region: 5,
+      titulo: "Actividades acuáticas", texto: "En la ciudad de Neuquén, la confluencia de los ríos invita a los deportes náuticos." },
+    { id: "pesca",      etiqueta: "Pesca",      forma: "rombo",     color: "#F29A3B", region: 6,
+      titulo: "Pesca deportiva", texto: "Los ríos de la región son un destino buscado para la pesca con mosca." },
+    { id: "esqui",      etiqueta: "Esquí",      forma: "estrella",  color: "#D9467A", region: 7,
+      titulo: "Lagos y nieve", texto: "Lagos de origen glaciar en verano y pistas de esquí en invierno." }
+  ],
+  preguntas: [
+    { texto: "¿En qué región está la ciudad de Neuquén?", opciones: ["Del Limay", "Confluencia", "Alto Neuquén"], correcta: 1 },
+    { texto: "¿Qué árbol le da nombre a la región Del Pehuén?", opciones: ["El ciprés", "El coihue", "La araucaria"], correcta: 2 },
+    { texto: "¿Cómo se llama el traslado del ganado entre invernada y veranada?", opciones: ["Trashumancia", "Señalada", "Rodeo"], correcta: 0 }
+  ]
+};
+
+const $ = (s) => document.querySelector(s);
+const SVGNS = "http://www.w3.org/2000/svg";
+
+function formaSVG(forma, color, tam = 100) {
+  const c = tam / 2, r = tam * 0.42;
+  const poli = (pts) => `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="${color}"/>`;
+  const reg = (n, rot = -90) => Array.from({ length: n }, (_, i) => {
+    const a = (rot + i * 360 / n) * Math.PI / 180; return [c + r * Math.cos(a), c + r * Math.sin(a)];
+  });
+  switch (forma) {
+    case "circulo":   return `<circle cx="${c}" cy="${c}" r="${r}" fill="${color}"/>`;
+    case "cuadrado":  return `<rect x="${c - r * .82}" y="${c - r * .82}" width="${r * 1.64}" height="${r * 1.64}" rx="${tam * .08}" fill="${color}"/>`;
+    case "triangulo": return poli(reg(3));
+    case "hexagono":  return poli(reg(6, 0));
+    case "rombo":     return poli(reg(4));
+    case "gota":      return `<path d="M${c} ${c - r} C ${c + r} ${c} ${c + r * .9} ${c + r} ${c} ${c + r} C ${c - r * .9} ${c + r} ${c - r} ${c} ${c} ${c - r} Z" fill="${color}"/>`;
+    case "estrella": {
+      const pts = Array.from({ length: 10 }, (_, i) => {
+        const rr = i % 2 ? r * .45 : r, a = (-90 + i * 36) * Math.PI / 180;
+        return [c + rr * Math.cos(a), c + rr * Math.sin(a)];
+      });
+      return poli(pts);
+    }
+  }
+}
+
+/* Figura dibujada dentro del mapa, centrada en la pista de su región. */
+function figuraEnMapa(fig, clase, color) {
+  const region = CONFIG.regiones.find(r => r.id === fig.region);
+  const t = CONFIG.tamPista, [x, y] = region.pista;
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("class", clase);
+  g.dataset.figura = fig.id;
+  g.style.color = fig.color;
+  g.innerHTML = `<svg x="${x - t / 2}" y="${y - t / 2}" width="${t}" height="${t}" viewBox="0 0 100 100">${formaSVG(fig.forma, color)}</svg>`;
+  return g;
+}
+
+const TARJETA_INICIAL = `<div class="eti">Empezá por cualquiera</div><h3>Siete regiones, siete figuras</h3><p>Buscá en el mapa la silueta con la misma forma y color. Cuando la ubiques, aparece acá un dato de esa región.</p>`;
+
+/* ---------- estado ---------- */
+let ubicadas, respuestasBien, nroPregunta, arrastre = null, ultimoToque = Date.now();
+
+function mostrar(id) {
+  for (const s of document.querySelectorAll(".pantalla")) s.hidden = s.id !== id;
+}
+
+function armarJuego() {
+  ubicadas = new Set();
+  const mapa = $("#mapa");
+  mapa.innerHTML = "";
+  for (const reg of CONFIG.regiones) {
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("d", reg.forma);
+    p.setAttribute("class", "region");
+    p.dataset.region = reg.id;
+    mapa.appendChild(p);
+  }
+  for (const fig of CONFIG.figuras) mapa.appendChild(figuraEnMapa(fig, "hueco", "none"));
+  for (const reg of CONFIG.regiones) {
+    const [x, y] = reg.pista, d = CONFIG.tamPista / 2 + 2;
+    const g = document.createElementNS(SVGNS, "g");
+    g.setAttribute("class", "num");
+    g.innerHTML = `<circle cx="${x - d}" cy="${y - d}" r="8"/><text x="${x - d}" y="${y - d + 1}">${reg.id}</text>`;
+    mapa.appendChild(g);
+  }
+  $("#leyenda").innerHTML = CONFIG.regiones.map(r => `<li data-region="${r.id}"><b>${r.id}</b>${r.nombre}</li>`).join("");
+  $("#barra").innerHTML = CONFIG.regiones.map(() => "<i></i>").join("");
+  const bandeja = $("#bandeja");
+  bandeja.innerHTML = "";
+  const mezcladas = [...CONFIG.figuras].sort(() => Math.random() - .5);
+  for (const f of mezcladas) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "figura";
+    b.dataset.figura = f.id;
+    b.innerHTML = `<svg viewBox="0 0 100 100">${formaSVG(f.forma, f.color)}</svg><span>${f.etiqueta}</span>`;
+    b.addEventListener("pointerdown", empezarArrastre);
+    bandeja.appendChild(b);
+  }
+  const t = $("#tarjeta");
+  t.className = "tarjeta";
+  t.innerHTML = TARJETA_INICIAL;
+  actualizarCuenta();
+}
+
+function actualizarCuenta() {
+  const total = CONFIG.figuras.length;
+  $("#cuenta").textContent = `${ubicadas.size} de ${total} ubicadas`;
+  [...$("#barra").children].forEach((i, k) => i.classList.toggle("on", k < ubicadas.size));
+}
+
+/* ---------- arrastre (mouse y dedo) ---------- */
+function empezarArrastre(e) {
+  if (arrastre) return;
+  e.preventDefault();
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  arrastre = { el, dx: e.clientX - r.left, dy: e.clientY - r.top, id: e.pointerId, encima: null };
+  el.style.width = r.width + "px";
+  el.classList.add("arrastrando");
+  mover(e);
+  window.addEventListener("pointermove", mover);
+  window.addEventListener("pointerup", soltar);
+  window.addEventListener("pointercancel", soltar);
+}
+
+function regionBajo(x, y) {
+  return document.elementsFromPoint(x, y).find(n => n.dataset?.region && n.classList.contains("region")) || null;
+}
+
+function mover(e) {
+  if (!arrastre || e.pointerId !== arrastre.id) return;
+  const base = $("#juego").getBoundingClientRect();
+  arrastre.el.style.left = (e.clientX - base.left - arrastre.dx) + "px";
+  arrastre.el.style.top = (e.clientY - base.top - arrastre.dy) + "px";
+  const reg = regionBajo(e.clientX, e.clientY);
+  if (reg !== arrastre.encima) {
+    arrastre.encima?.classList.remove("encima");
+    if (reg && !reg.classList.contains("lograda")) reg.classList.add("encima");
+    arrastre.encima = reg;
+  }
+}
+
+function soltar(e) {
+  if (!arrastre || e.pointerId !== arrastre.id) return;
+  window.removeEventListener("pointermove", mover);
+  window.removeEventListener("pointerup", soltar);
+  window.removeEventListener("pointercancel", soltar);
+  const { el } = arrastre;
+  arrastre.encima?.classList.remove("encima");
+  const reg = e.type === "pointerup" ? regionBajo(e.clientX, e.clientY) : null;
+  const fig = CONFIG.figuras.find(f => f.id === el.dataset.figura);
+  arrastre = null;
+
+  if (reg && Number(reg.dataset.region) === fig.region && !reg.classList.contains("lograda")) {
+    acierto(el, reg, fig);
+  } else {
+    el.classList.remove("arrastrando");
+    el.style.left = el.style.top = el.style.width = "";
+    if (reg) {
+      el.classList.remove("sacude"); void el.offsetWidth; el.classList.add("sacude");
+      const t = $("#tarjeta");
+      t.className = "tarjeta error nueva";
+      t.innerHTML = `<div class="eti">Casi</div><h3>Esa no es su región</h3><p>Buscá la silueta con la misma forma y color que ${fig.etiqueta.toLowerCase()}.</p>`;
+    }
+  }
+}
+
+function acierto(el, reg, fig) {
+  el.remove();
+  reg.classList.add("lograda");
+  ubicadas.add(fig.id);
+  const mapa = $("#mapa");
+  mapa.querySelector(`.hueco[data-figura="${fig.id}"]`)?.remove();
+  mapa.appendChild(figuraEnMapa(fig, "colocada", fig.color));
+  const region = CONFIG.regiones.find(r => r.id === fig.region);
+  $("#leyenda").querySelector(`[data-region="${fig.region}"]`).classList.add("ok");
+  const t = $("#tarjeta");
+  t.className = "tarjeta nueva";
+  t.innerHTML = `<div class="eti">¡Región completa! · ${region.nombre}</div><h3>${fig.titulo}</h3><p>${fig.texto}</p>`;
+  actualizarCuenta();
+  if (ubicadas.size === CONFIG.figuras.length) setTimeout(empezarPreguntas, 2200);
+}
+
+/* ---------- preguntas ---------- */
+function empezarPreguntas() {
+  respuestasBien = 0;
+  nroPregunta = 0;
+  if (!CONFIG.preguntas.length) return terminar();
+  mostrar("preguntas");
+  mostrarPregunta();
+}
+
+function mostrarPregunta() {
+  const p = CONFIG.preguntas[nroPregunta];
+  $("#nro-pregunta").textContent = `Pregunta ${nroPregunta + 1} de ${CONFIG.preguntas.length}`;
+  $("#texto-pregunta").textContent = p.texto;
+  $("#devolucion").textContent = "";
+  $("#siguiente").hidden = true;
+  const cont = $("#opciones");
+  cont.innerHTML = "";
+  p.opciones.forEach((txt, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opcion";
+    b.textContent = txt;
+    b.addEventListener("click", () => responder(i));
+    cont.appendChild(b);
+  });
+}
+
+function responder(i) {
+  const p = CONFIG.preguntas[nroPregunta];
+  const botones = [...$("#opciones").children];
+  botones.forEach(b => b.disabled = true);
+  botones[p.correcta].classList.add("bien");
+  if (i === p.correcta) {
+    respuestasBien++;
+    $("#devolucion").textContent = "¡Correcto!";
+  } else {
+    botones[i].classList.add("mal");
+    $("#devolucion").textContent = `La respuesta era: ${p.opciones[p.correcta]}.`;
+  }
+  const s = $("#siguiente");
+  s.textContent = nroPregunta === CONFIG.preguntas.length - 1 ? "Ver resultado" : "Siguiente";
+  s.hidden = false;
+}
+
+$("#siguiente").addEventListener("click", () => {
+  nroPregunta++;
+  if (nroPregunta < CONFIG.preguntas.length) mostrarPregunta(); else terminar();
+});
+
+/* ---------- final ---------- */
+function terminar() {
+  const nP = CONFIG.preguntas.length;
+  $("#resumen").textContent = nP
+    ? `Ubicaste las ${CONFIG.figuras.length} figuras y respondiste ${respuestasBien} de ${nP} preguntas. Seguí recorriendo el stand: hay mucho más para descubrir.`
+    : `Ubicaste las ${CONFIG.figuras.length} figuras. Seguí recorriendo el stand: hay mucho más para descubrir.`;
+  const pap = $("#papelitos");
+  const colores = CONFIG.figuras.map(f => f.color);
+  pap.innerHTML = Array.from({ length: 40 }, (_, i) =>
+    `<i style="left:${Math.random() * 100}%;background:${colores[i % colores.length]};animation-delay:${Math.random() * 0.9}s"></i>`
+  ).join("");
+  mostrar("final");
+}
+
+/* ---------- inicio, inactividad y reinicio oculto ---------- */
+function volverAlInicio() {
+  arrastre = null;
+  mostrar("inicio");
+}
+
+$("#jugar").addEventListener("click", () => { armarJuego(); mostrar("juego"); });
+$("#otra-vez").addEventListener("click", () => { armarJuego(); mostrar("juego"); });
+
+document.addEventListener("pointerdown", () => { ultimoToque = Date.now(); }, true);
+setInterval(() => {
+  const enJuego = $("#inicio").hidden;
+  if (enJuego && !arrastre && Date.now() - ultimoToque > CONFIG.segundosInactividad * 1000) volverAlInicio();
+}, 2000);
+
+/* Mantener apretada la esquina superior izquierda 2 segundos vuelve al inicio (para quien atiende el stand). */
+(() => {
+  const z = $("#reinicio-oculto");
+  let timer = null;
+  const cortar = () => { clearTimeout(timer); timer = null; z.classList.remove("sosteniendo"); };
+  z.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    z.classList.add("sosteniendo");
+    timer = setTimeout(() => { cortar(); volverAlInicio(); }, 2000);
+  });
+  z.addEventListener("pointerup", cortar);
+  z.addEventListener("pointerleave", cortar);
+  z.addEventListener("pointercancel", cortar);
+})();
+
+mostrar("inicio");
+</script>
+</body>
+</html>
