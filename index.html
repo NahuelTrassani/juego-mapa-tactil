@@ -11,31 +11,51 @@
 <div class="totem" id="totem">
   <div id="reinicio-oculto" aria-hidden="true"></div>
 
-  <section class="pantalla" id="inicio">
-    <h1 class="titulo" id="titulo"></h1>
-    <p class="bajada" id="bajada"></p>
-    <button class="boton pulso" id="jugar" type="button"></button>
+  <section class="pantalla centrada" id="inicio">
+    <p class="logo" id="inicio-logo"></p>
+    <h2 class="subtitulo" id="inicio-titulo"></h2>
+    <h1 class="titulo" id="inicio-texto"></h1>
+  </section>
+
+  <section class="pantalla" id="muestra" hidden>
+    <header class="cabecera">
+      <h2 class="subtitulo" id="muestra-titulo"></h2>
+      <div class="tiempo"><i id="tiempo-muestra"></i></div>
+    </header>
+    <div class="muestra" id="muestra-contenido"></div>
+    <p class="ayuda" id="muestra-ayuda"></p>
+  </section>
+
+  <section class="pantalla centrada" id="condiciones" hidden>
+    <h2 class="titulo" id="condiciones-titulo"></h2>
+    <p class="bajada" id="condiciones-texto"></p>
+    <button class="boton pulso" id="empezar" type="button"></button>
   </section>
 
   <section class="pantalla" id="juego" hidden>
-    <header class="cabecera">
-      <div class="barra" id="barra"></div>
-      <div class="cuenta"><span id="cuenta"></span><small id="ayuda"></small></div>
-      <p class="consigna" id="consigna"></p>
-    </header>
-    <div class="zona-mapa">
-      <svg id="mapa" aria-label="Mapa de las regiones"></svg>
-      <ol class="leyenda" id="leyenda"></ol>
+    <p class="logo logo-juego" id="juego-logo"></p>
+    <div class="estado">
+      <span class="cuenta" id="cuenta"></span>
+      <div class="intentos" id="intentos"></div>
     </div>
-    <div class="tarjeta" id="tarjeta"></div>
-    <div class="bandeja" id="bandeja"></div>
+    <div class="tablero">
+      <svg id="mapa" class="mapa" aria-label="Mapa de las regiones"></svg>
+      <div class="bandeja" id="bandeja"></div>
+      <div class="pie-lateral">
+        <ol class="leyenda" id="leyenda"></ol>
+        <button class="boton boton-chico" id="volver-juego" type="button"></button>
+      </div>
+      <div class="tarjeta" id="tarjeta" hidden></div>
+    </div>
   </section>
 
-  <section class="pantalla" id="final" hidden>
+  <section class="pantalla centrada" id="final" hidden>
     <div class="papelitos" id="papelitos"></div>
-    <h2 id="final-titulo"></h2>
-    <p id="final-texto"></p>
-    <button class="boton" id="otra-vez" type="button"></button>
+    <p class="logo" id="final-logo"></p>
+    <p class="resultado" id="final-resultado"></p>
+    <h2 class="subtitulo" id="final-titulo"></h2>
+    <h1 class="titulo" id="final-texto"></h1>
+    <button class="boton" id="volver-final" type="button"></button>
   </section>
 </div>
 

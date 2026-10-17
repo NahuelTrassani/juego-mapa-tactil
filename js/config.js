@@ -1,30 +1,42 @@
 // Contenido del evento. Para otro evento se cambia este archivo, no la lógica.
 const CONFIG = {
-  segundosInactividad: 60,
-  msAntesDelFinal: 2200,
+  intentos: 5,
+  msAntesDelFinal: 2600,
+  msMarcaError: 1200,
+  msTarjeta: 2600,
+  segundos: { inicio: 5, muestra: 8, final: 30, inactividad: 60 },
+  mostrarEtiquetas: true,
 
   textos: {
     titulo: "¿Cuánto conocés Neuquén?",
-    bajada: "Ubicá cada figura en su región del mapa y descubrí algo de cada rincón de la provincia.",
-    botonJugar: "Tocá para jugar",
-    ayuda: "Arrastrá con el dedo",
-    consigna: "Arrastrá cada figura hasta la región del mapa donde corresponde.",
-    tarjetaInicial: { etiqueta: "Empezá por cualquiera", titulo: "Siete regiones, siete figuras", texto: "Cuando ubiques una figura en su región, aparece acá un dato de esa región." },
-    tarjetaError: { etiqueta: "Casi", titulo: "Esa no es su región", texto: "Probá con otra región del mapa." },
-    etiquetaAcierto: "¡Región completa!",
-    finalTitulo: "¡Sos un experto en Neuquén!",
-    finalTexto: "Ubicaste todas las figuras. Seguí recorriendo el stand: hay mucho más para descubrir.",
-    botonOtraVez: "Jugar de nuevo"
+    logo: "Provincia del Neuquén",
+    inicio: { titulo: "¿Te animás a jugar?", texto: "¡Conectá zonas y productos!" },
+    muestra: { titulo: "Mirá bien dónde va cada uno", ayuda: "Tocá la pantalla para seguir" },
+    condiciones: { titulo: "Tenés 5 intentos", texto: "Arrastrá un producto hasta su región. Si acertás, la región se pinta de verde; si no, de rojo.", boton: "Empezar" },
+    tarjetaInicial: { etiqueta: "Empezá por cualquiera", titulo: "¿Dónde va cada producto?", texto: "Arrastralo con el dedo hasta su región del mapa." },
+    etiquetaAcierto: "¡Correcto!",
+    etiquetaError: "Incorrecto",
+    sinIntentos: "Se terminaron los intentos.",
+    terminaste: "¡Terminaste!",
+    botonVolver: "Volver",
+    botonOtraVez: "Volver",
+    finales: [
+      { desde: 0, hasta: 1, titulo: "¡No te desanimes!", texto: "¡Hoy descubriste algo nuevo de Neuquén!" },
+      { desde: 2, hasta: 3, titulo: "¡Vas por buen camino!", texto: "¡Ya conocés buena parte de Neuquén!" },
+      { desde: 4, hasta: 5, titulo: "¡Sabés un montón!", texto: "¡Neuquén no tiene secretos para vos!" }
+    ]
   },
 
   // imagen: ilustración del mapa (vacío = regiones pintadas). Regiones y puntos en coordenadas del viewBox.
   mapa: {
     viewBox: "-4 -4 308 492",
     imagen: "",
-    tamFigura: 34,
-    mostrarPistas: true,
+    tamProducto: 40,
     mostrarNumeros: true
   },
+
+  // imagen: mapa completo con los productos (vacío = se arma con el mapa y los productos)
+  muestra: { imagen: "" },
 
   // Regiones aproximadas: departamentos agrupados (herramientas/regiones.py)
   regiones: [
@@ -44,10 +56,10 @@ const CONFIG = {
       contorno: "M54.76 323.19 L55.58 324.84 L57.76 324.82 L59.84 330.17 L61.12 330.93 L63.27 329.81 L66.55 329.77 L67.3 330.62 L68.12 329.5 L71.69 330.94 L72.93 330.01 L73.98 331.32 L76.24 330.32 L76.46 332.99 L75.23 333.93 L76.26 336.37 L77.27 336.2 L77.97 337.26 L77.19 342.38 L78.02 343.95 L82.08 344.39 L80.54 348.7 L81.99 350.99 L77.83 352.77 L78.9 355.09 L82.54 356.64 L83.49 363.09 L85.63 364.67 L84.53 367.06 L85.92 371.62 L84.58 372.12 L84.79 375.56 L86.15 377.02 L85.22 379.05 L89.56 385.92 L91.73 386.57 L92.94 390.56 L95.02 391.85 L96.12 394.85 L98.24 396.05 L98.54 398.4 L100.39 399.54 L97.82 403.16 L98.98 406.24 L96.27 411.17 L98.44 412.88 L97.53 415.09 L99.46 420.52 L102.72 424.5 L105.37 423.95 L108.45 425.37 L101.53 430.07 L99.24 433.77 L95.69 433.98 L93.21 432.76 L83.53 434.19 L82.2 436.59 L74.84 439.32 L72.17 442.29 L70.81 446.66 L65.74 447.13 L63.98 450.12 L64.13 454.46 L65.99 456.46 L65.37 457.79 L69.5 461.02 L68.96 462.03 L70.04 462.56 L70.63 466.86 L69.65 468.27 L70.25 469.18 L68.51 471.48 L65.28 472.5 L66.31 473.15 L64.39 474.05 L62.22 478.85 L59.83 478.77 L54.86 482.54 L49.89 483.02 L45.77 481.92 L38.53 477.37 L31.4 475.58 L26.01 476.71 L13.65 475.15 L7.92 476.33 L6.9 473.35 L4.46 471.96 L4.3 470.62 L4.62 469.59 L5.95 470.22 L8.25 469.44 L7.29 462.98 L8.11 461.62 L6.46 461.81 L2.92 457.25 L2.34 456.11 L3.41 452.67 L0.71 450.23 L0.19 446.28 L7.48 440.72 L7.38 439.34 L9.21 437.32 L9.46 434.41 L10.72 432.47 L8.28 433.9 L5.69 430.4 L8.09 430.28 L8.05 428.35 L9.3 427.39 L8.32 425.84 L9.46 423.87 L9.39 420.28 L11.03 418.44 L10.61 417.38 L11.91 415.87 L13.14 415.96 L14.6 417.46 L15.64 416.78 L17.3 419.15 L20.67 415.73 L20.63 412.69 L23.37 411.75 L23.42 410.81 L22.08 409.82 L22.24 406.64 L21.24 404.99 L18.83 403.53 L16.51 406.26 L15.49 405.47 L15.42 403.3 L12.6 401.25 L11.97 399.09 L10.68 398.96 L10.32 396.62 L12.55 394.53 L10.36 393.19 L11.87 391.26 L11.8 389.82 L12.64 389.81 L12.32 387.22 L10.18 386.7 L11.56 384.32 L20.06 387.85 L22.14 386.57 L22.66 383.64 L20.96 379.67 L21.99 379.04 L23.8 373.78 L26.15 373.91 L26.59 372.35 L25.74 370.56 L27.81 369.7 L27.46 368.45 L28.21 367.99 L26.7 364.4 L25.17 365.16 L24.38 362.35 L22.44 363.33 L20.72 361.12 L20.7 359.54 L22.6 357.87 L21.34 357.35 L21.55 354.13 L19.16 349.85 L20.58 348.19 L19.79 347.08 L22.24 346.76 L22.41 345.77 L21.03 345.35 L20.55 343.43 L18.79 342.56 L18.92 341.09 L20.49 340.12 L20.2 336.58 L22.05 334.29 L23.42 336.6 L25.85 337.05 L26.9 340.54 L29.91 341.25 L32.13 340.16 L35.1 341.46 L38.17 336.15 L37.16 335.31 L37.71 333.73 L36.81 333.18 L34.93 333.97 L32.64 330.98 L33.91 328.53 L37.28 327.48 L38.12 323.68 L43.53 323.85 L44.28 325.19 L45.64 324.8 L47.84 326.45 L50.11 325.09 L51.58 326.24 L54.76 323.19 Z" }
   ],
 
-  figuras: [
+  productos: [
     { id: "crianceros", etiqueta: "Crianceros", imagen: "assets/productos/crianceros.svg", region: 1,
       titulo: "Trashumancia", texto: "En el norte neuquino, los crianceros llevan el ganado de la invernada a la veranada, como hace siglos." },
-    { id: "torre",      etiqueta: "Petróleo",   imagen: "assets/productos/torre.svg",      region: 2,
+    { id: "petroleo",   etiqueta: "Petróleo",   imagen: "assets/productos/torre.svg",      region: 2,
       titulo: "Vaca Muerta", texto: "Una de las formaciones de gas y petróleo no convencional más grandes del mundo." },
     { id: "araucaria",  etiqueta: "Araucaria",  imagen: "assets/productos/araucaria.svg",  region: 3,
       titulo: "El pehuén", texto: "La araucaria, árbol sagrado para el pueblo mapuche, le da nombre a la región." },
