@@ -10,13 +10,25 @@ Abrir `index.html` en el navegador de la PC del tótem, en pantalla completa (F1
 
 ## Adaptarlo a otro evento
 
-Todo el contenido está en el objeto `CONFIG`, al principio del script:
+Todo el contenido está en `js/config.js`:
 
-- `regiones`: nombre, contorno del mapa y posición de la pista
-- `figuras`: forma, color, región que les corresponde y el dato que se muestra al acertar
+- `textos`: títulos, consignas y mensajes de cada pantalla
+- `mapa`: ilustración de fondo, tamaño de las figuras y si se muestran pistas y números
+- `regiones`: nombre, contorno y punto donde se ubica la figura
+- `figuras`: imagen, región que les corresponde y el dato que se muestra al acertar
 - `segundosInactividad`: tiempo sin uso antes de volver al inicio
 
-Para otro evento se cambia el contenido; la lógica queda igual.
+Las imágenes van en `assets/`, y la paleta y las tipografías en `css/estilos.css`. Para otro evento se cambia el contenido; la lógica (`js/juego.js`) queda igual.
+
+## Estructura
+
+```
+index.html
+css/estilos.css
+js/config.js      contenido del evento
+js/juego.js       lógica del juego
+assets/productos/ imágenes de las figuras
+```
 
 ## En el tótem
 
