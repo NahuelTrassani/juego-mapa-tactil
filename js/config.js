@@ -3,9 +3,9 @@ const CONFIG = {
   intentos: 5,
   msAntesDelFinal: 1800,
   msMarcaError: 1200,
-  msTarjetaCentro: 700,
-  msTarjeta: 2200,
-  segundos: { inicio: 5, muestra: 8, final: 30, inactividad: 60 },
+  msTarjetaCentro: 1500,
+  msTarjeta: 3000,
+  segundos: { inicio: 5, muestra: 8, condiciones: 30, final: 30, inactividad: 60 },
   mostrarEtiquetas: true,
   productosPorPartida: { min: 7, max: 7 },
 

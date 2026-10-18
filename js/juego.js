@@ -448,11 +448,12 @@ function volverAlInicio() {
   programar(mostrarMuestra, CONFIG.segundos.inicio * 1000);
 }
 
-// Inactividad en las condiciones o en el juego: vuelve al inicio
+// Inactividad: en condiciones a los 30 s y en el juego al minuto, vuelve al inicio
 function vigilarInactividad() {
   document.addEventListener("pointerdown", () => { ultimoToque = Date.now(); }, true);
   setInterval(() => {
-    const quieto = Date.now() - ultimoToque > CONFIG.segundos.inactividad * 1000;
+    const limite = pantallaActual === "condiciones" ? CONFIG.segundos.condiciones : CONFIG.segundos.inactividad;
+    const quieto = Date.now() - ultimoToque > limite * 1000;
     if (quieto && !arrastre && (pantallaActual === "juego" || pantallaActual === "condiciones")) volverAlInicio();
   }, 2000);
 }
