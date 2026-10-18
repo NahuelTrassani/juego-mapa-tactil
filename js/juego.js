@@ -21,6 +21,7 @@ function cancelarTimers() {
 
 function mostrar(id) {
   pantallaActual = id;
+  ultimoToque = Date.now();
   for (const s of document.querySelectorAll(".pantalla")) s.hidden = s.id !== id;
 }
 
@@ -242,17 +243,21 @@ function armarLeyenda() {
   }));
 }
 
-// Cartel sobre el mapa: aparece y se va solo
-function mostrarTarjeta(clase, etiqueta, titulo, texto) {
+// Cartel: aparece en el medio, sube para no estorbar y se va solo. Con fija: true queda en el medio (último intento)
+function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   const t = $("#tarjeta");
   t.className = `tarjeta nueva ${clase}`.trim();
   t.replaceChildren(crear("div", "eti", etiqueta), crear("h3", "", titulo), crear("p", "", texto));
   t.hidden = false;
   clearTimeout(timerTarjeta);
+  if (fija) return;
   timerTarjeta = setTimeout(() => {
-    t.classList.add("sale");
-    timerTarjeta = setTimeout(() => { t.hidden = true; }, 300);
-  }, CONFIG.msTarjeta);
+    t.classList.add("arriba");
+    timerTarjeta = setTimeout(() => {
+      t.classList.add("sale");
+      timerTarjeta = setTimeout(() => { t.hidden = true; }, 300);
+    }, CONFIG.msTarjeta);
+  }, CONFIG.msTarjetaCentro);
 }
 
 function actualizarCuenta() {
@@ -271,6 +276,7 @@ function quedan() {
 function empezarPartida() {
   cancelarTimers();
   partida = { resultados: [], terminada: false };
+  $("#bandeja").classList.remove("apagada");
   mostrar("juego");
   armarMapa($("#mapa"));
   armarLeyenda();
@@ -392,7 +398,10 @@ function soltar(e) {
   if (bien) acierto(el, reg, prod, puntoEnMapa(img.left + img.width / 2, img.top + img.height / 2));
   else error(el, reg, prod);
   actualizarCuenta();
-  if (partida.terminada) programar(terminar, CONFIG.msAntesDelFinal);
+  if (partida.terminada) {
+    $("#bandeja").classList.add("apagada");
+    programar(terminar, CONFIG.msAntesDelFinal);
+  }
 }
 
 function acierto(el, reg, prod, punto) {
@@ -400,8 +409,8 @@ function acierto(el, reg, prod, punto) {
   reg.classList.add("lograda");
   $("#mapa").append(productoEnMapa(prod, punto));
   const region = regionDe(prod);
-  const cierre = partida.terminada ? "" : ` ${quedan()}`;
-  mostrarTarjeta("bien", `${CONFIG.textos.etiquetaAcierto} · ${region.nombre}`, prod.titulo, prod.texto + cierre);
+  const cierre = partida.terminada ? CONFIG.textos.vamosAlResultado : quedan();
+  mostrarTarjeta("bien", `${CONFIG.textos.etiquetaAcierto} · ${region.nombre}`, prod.titulo, `${prod.texto} ${cierre}`, partida.terminada);
 }
 
 function error(el, reg, prod) {
@@ -409,8 +418,8 @@ function error(el, reg, prod) {
   reg.classList.add("error");
   programar(() => reg.classList.remove("error"), CONFIG.msMarcaError);
   const region = CONFIG.regiones.find(r => r.id === Number(reg.dataset.region));
-  const texto = partida.terminada ? CONFIG.textos.sinIntentos : `Probá con otra región. ${quedan()}`;
-  mostrarTarjeta("error", CONFIG.textos.etiquetaError, `${prod.etiqueta} no va en ${region.nombre}`, texto);
+  const texto = partida.terminada ? CONFIG.textos.vamosAlResultado : `Probá con otra región. ${quedan()}`;
+  mostrarTarjeta("error", CONFIG.textos.etiquetaError, `${prod.etiqueta} no va en ${region.nombre}`, texto, partida.terminada);
 }
 
 function terminar() {

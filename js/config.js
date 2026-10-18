@@ -1,9 +1,10 @@
 // Contenido del evento. Para otro evento se cambia este archivo, no la lógica.
 const CONFIG = {
   intentos: 5,
-  msAntesDelFinal: 2600,
+  msAntesDelFinal: 1800,
   msMarcaError: 1200,
-  msTarjeta: 2600,
+  msTarjetaCentro: 700,
+  msTarjeta: 2200,
   segundos: { inicio: 5, muestra: 8, final: 30, inactividad: 60 },
   mostrarEtiquetas: true,
   productosPorPartida: { min: 7, max: 7 },
@@ -17,7 +18,7 @@ const CONFIG = {
     tarjetaInicial: { etiqueta: "Empezá por cualquiera", titulo: "¿Dónde va cada producto?", texto: "Arrastralo con el dedo hasta su región del mapa." },
     etiquetaAcierto: "¡Correcto!",
     etiquetaError: "Incorrecto",
-    sinIntentos: "Se terminaron los intentos.",
+    vamosAlResultado: "¡Terminaste! Vamos a tu resultado…",
     terminaste: "¡Terminaste!",
     botonVolver: "Volver",
     botonOtraVez: "Volver",
