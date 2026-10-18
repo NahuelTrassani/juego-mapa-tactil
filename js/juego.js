@@ -180,40 +180,58 @@ function ubicarProductos(botones) {
     b.dataset.y = `${(y + azar(0, 0.05) * h) / alto * 100}%`;
     b.style.left = b.dataset.x;
     b.style.top = b.dataset.y;
-    b.style.setProperty("--giro", `${azar(-12, 12)}deg`);
+    b.style.setProperty("--giro", `${azar(-8, 8)}deg`);
   });
 }
 
-// Lugares en el espacio libre a la derecha del mapa, sin tapar regiones, la leyenda ni el botón
+// Lugares en el espacio libre a la derecha del mapa, sin tocar regiones, la leyenda ni el botón
 function lugaresLibres(tam, cantidad) {
   const tablero = $(".tablero").getBoundingClientRect();
   const svg = $("#mapa");
   const inversa = svg.getScreenCTM().inverse();
   const regiones = [...svg.querySelectorAll(".region")];
   const tapados = [$("#leyenda"), $("#volver-juego")].map(e => e.getBoundingClientRect());
-  const enElMapa = (x, y) => {
-    const p = new DOMPoint(x, y).matrixTransform(inversa);
-    return regiones.some(r => r.isPointInFill(p));
-  };
-  const puntos = [[0.5, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]];
-  const w = tam.width * 1.3, h = tam.height * 1.1;
-  const libres = [], resto = [];
-  for (let y = tablero.top; y + h <= tablero.bottom; y += h) {
-    for (let x = tablero.right - w; x >= tablero.left + tablero.width * 0.4; x -= w) {
-      if (tapados.some(o => x < o.right && x + w > o.left && y < o.bottom && y + h > o.top)) continue;
-      const lugar = { x: x - tablero.left, y: y - tablero.top, w, h };
-      (puntos.some(([a, b]) => enElMapa(x + w * a, y + h * b)) ? resto : libres).push(lugar);
+  const PASO = tablero.width / 80;
+  const cols = Math.ceil(tablero.width / PASO), filas = Math.ceil(tablero.height / PASO);
+
+  // Ocupación de la pantalla en celdas chicas (mapa, leyenda y botón), con sumas acumuladas para consultar rectángulos rápido
+  const suma = Array.from({ length: filas + 1 }, () => new Int32Array(cols + 1));
+  for (let f = 0; f < filas; f++) {
+    for (let c = 0; c < cols; c++) {
+      const x = tablero.left + (c + 0.5) * PASO, y = tablero.top + (f + 0.5) * PASO;
+      const p = new DOMPoint(x, y).matrixTransform(inversa);
+      const ocupada = regiones.some(r => r.isPointInFill(p)) || tapados.some(o => x >= o.left && x <= o.right && y >= o.top && y <= o.bottom);
+      suma[f + 1][c + 1] = (ocupada ? 1 : 0) + suma[f][c + 1] + suma[f + 1][c] - suma[f][c];
     }
   }
-  // Repartidos de arriba abajo: un lugar al azar por cada tramo
-  const paso = libres.length / cantidad;
-  const elegidos = paso >= 1
-    ? Array.from({ length: cantidad }, (_, i) => {
-        const desde = Math.floor(i * paso), hasta = Math.floor((i + 1) * paso);
-        return libres[desde + Math.floor(Math.random() * (hasta - desde))];
-      })
-    : libres;
-  return [...elegidos, ...resto].slice(0, cantidad);
+  const libre = (x, y, w, h) => {
+    const c0 = Math.max(0, Math.floor(x / PASO) - 1), f0 = Math.max(0, Math.floor(y / PASO) - 1);
+    const c1 = Math.min(cols, Math.ceil((x + w) / PASO) + 1), f1 = Math.min(filas, Math.ceil((y + h) / PASO) + 1);
+    return suma[f1][c1] - suma[f0][c1] - suma[f1][c0] + suma[f0][c0] === 0;
+  };
+
+  // Lugares posibles a la derecha (el área incluye el corrimiento al azar)
+  const w = tam.width * 1.1, h = tam.height * 1.06;
+  const posibles = [];
+  for (let y = 0; y + h <= tablero.height; y += PASO) {
+    for (let x = tablero.width - w; x >= tablero.width * 0.4; x -= PASO) {
+      if (libre(x, y, w, h)) posibles.push({ x, y, w: tam.width, h: tam.height });
+    }
+  }
+
+  // Elegidos al azar sin pisarse entre sí
+  const separados = (a, b) => a.x + w <= b.x || b.x + w <= a.x || a.y + h <= b.y || b.y + h <= a.y;
+  // Varios intentos de reparto al azar; se queda con el primero donde entran todos (o el que más ubicó)
+  let mejor = [];
+  for (let intento = 0; intento < 40 && mejor.length < cantidad; intento++) {
+    const elegidos = [];
+    for (const lugar of mezclar(posibles)) {
+      if (elegidos.every(o => separados(lugar, o))) elegidos.push(lugar);
+      if (elegidos.length === cantidad) break;
+    }
+    if (elegidos.length > mejor.length) mejor = elegidos;
+  }
+  return mejor;
 }
 
 function armarLeyenda() {
