@@ -6,6 +6,7 @@ const CONFIG = {
   msTarjeta: 2600,
   segundos: { inicio: 5, muestra: 8, final: 30, inactividad: 60 },
   mostrarEtiquetas: true,
+  productosPorPartida: { min: 7, max: 7 },
 
   textos: {
     titulo: "¿Cuánto conocés Neuquén?",

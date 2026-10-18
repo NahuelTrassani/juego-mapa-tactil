@@ -146,7 +146,9 @@ function irACondiciones() {
 function armarBandeja() {
   const bandeja = $("#bandeja");
   bandeja.replaceChildren();
-  const botones = mezclar(CONFIG.productos).map(prod => {
+  const { min, max } = CONFIG.productosPorPartida;
+  const cantidad = Math.min(CONFIG.productos.length, min + Math.floor(Math.random() * (max - min + 1)));
+  const botones = mezclar(CONFIG.productos).slice(0, cantidad).map(prod => {
     const b = crear("button", "figura");
     b.type = "button";
     b.dataset.producto = prod.id;
@@ -170,11 +172,12 @@ function ubicarProductos(botones) {
   for (const b of botones) b.style.left = b.style.top = "0";
   const tam = { width: Math.max(...botones.map(b => b.offsetWidth)), height: Math.max(...botones.map(b => b.offsetHeight)) };
   const lugares = lugaresLibres(tam, botones.length);
+  const { width: ancho, height: alto } = $(".tablero").getBoundingClientRect();
   const azar = (min, max) => min + Math.random() * (max - min);
   botones.forEach((b, i) => {
     const { x, y, w, h } = lugares[i % lugares.length] || { x: 0, y: 0, w: tam.width, h: tam.height };
-    b.dataset.x = `${x + azar(0, 0.08) * w}px`;
-    b.dataset.y = `${y + azar(0, 0.05) * h}px`;
+    b.dataset.x = `${(x + azar(0, 0.08) * w) / ancho * 100}%`;
+    b.dataset.y = `${(y + azar(0, 0.05) * h) / alto * 100}%`;
     b.style.left = b.dataset.x;
     b.style.top = b.dataset.y;
     b.style.setProperty("--giro", `${azar(-12, 12)}deg`);
@@ -295,7 +298,8 @@ function regionBajo(x, y) {
 // Región que toca el producto: primero el centro de la imagen, después sus bordes
 function regionBajoFigura(el) {
   const r = el.querySelector("img").getBoundingClientRect();
-  const puntos = [[0.5, 0.5], [0.5, 0.15], [0.5, 0.85], [0.15, 0.5], [0.85, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]];
+  const grilla = [0.1, 0.3, 0.5, 0.7, 0.9];
+  const puntos = [[0.5, 0.5], ...grilla.flatMap(a => grilla.map(b => [a, b]))];
   for (const [a, b] of puntos) {
     const reg = regionBajo(r.left + r.width * a, r.top + r.height * b);
     if (reg) return reg;
@@ -306,6 +310,22 @@ function regionBajoFigura(el) {
 function puntoEnMapa(x, y) {
   const p = new DOMPoint(x, y).matrixTransform($("#mapa").getScreenCTM().inverse());
   return [p.x, p.y];
+}
+
+// Fuera del mapa queda donde lo soltaron, acomodado dentro del tablero; si tapa la leyenda, el botón u otro producto, vuelve a su último lugar
+function dejarDondeLoSoltaron(el) {
+  const r = el.getBoundingClientRect();
+  const tablero = $(".tablero").getBoundingClientRect();
+  const x = Math.min(Math.max(r.left, tablero.left), tablero.right - r.width);
+  const y = Math.min(Math.max(r.top, tablero.top), tablero.bottom - r.height);
+  const choca = (o) => x < o.right && x + r.width > o.left && y < o.bottom && y + r.height > o.top;
+  const otros = [...$("#bandeja").children].filter(f => f !== el);
+  const obstaculos = [$("#leyenda"), $("#volver-juego"), ...otros].map(o => o.getBoundingClientRect());
+  if (!obstaculos.some(choca)) {
+    el.dataset.x = `${(x - tablero.left) / tablero.width * 100}%`;
+    el.dataset.y = `${(y - tablero.top) / tablero.height * 100}%`;
+  }
+  devolver(el);
 }
 
 function mover(e) {
@@ -341,7 +361,8 @@ function soltar(e) {
   cancelarArrastre();
   const reg = e.type === "pointerup" ? regionBajoFigura(el) : null;
   if (!reg) {
-    devolver(el);
+    if (e.type === "pointerup") dejarDondeLoSoltaron(el);
+    else devolver(el);
     return;
   }
   const prod = CONFIG.productos.find(p => p.id === el.dataset.producto);
@@ -423,11 +444,6 @@ function activarReinicioOculto() {
   z.addEventListener("pointerleave", cortar);
   z.addEventListener("pointercancel", cortar);
 }
-
-// Si cambia el tamaño de la pantalla en pleno juego, se reubican los productos que quedan
-window.addEventListener("resize", () => {
-  if (pantallaActual === "juego" && !arrastre) ubicarProductos([...$("#bandeja").children]);
-});
 
 // Revisión del contenido al cargar: avisa en la consola lo que haría fallar el juego
 function revisarConfig() {
