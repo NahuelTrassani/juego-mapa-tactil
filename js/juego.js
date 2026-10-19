@@ -265,7 +265,7 @@ function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
       t.classList.add("sale");
       timerTarjeta = setTimeout(() => { t.hidden = true; }, 300);
     }, CONFIG.msTarjeta);
-  }, CONFIG.msTarjetaCentro);
+  }, texto.length > 60 ? CONFIG.msTarjetaLectura : CONFIG.msTarjetaCentro);
 }
 
 function actualizarCuenta() {
