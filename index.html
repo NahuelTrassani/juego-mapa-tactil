@@ -11,14 +11,23 @@
 <div class="totem" id="totem">
   <div id="reinicio-oculto" aria-hidden="true"></div>
 
+  <div class="deco" aria-hidden="true">
+    <img class="nubes nubes-arriba" src="assets/juego/decoracion/nubes.svg" alt="">
+    <img class="nubes nubes-abajo" src="assets/juego/decoracion/nubes.svg" alt="">
+    <img class="flor mutisia" src="assets/juego/decoracion/mutisia.webp" alt="">
+    <img class="flor amancay" src="assets/juego/decoracion/amancay.webp" alt="">
+    <img class="flor jarilla" src="assets/juego/decoracion/jarilla.webp" alt="">
+  </div>
+
   <section class="pantalla centrada" id="inicio">
-    <p class="logo" id="inicio-logo"></p>
+    <img class="logo" src="assets/juego/logo-provincia.svg" alt="Provincia del Neuquén">
     <h2 class="subtitulo" id="inicio-titulo"></h2>
     <h1 class="titulo" id="inicio-texto"></h1>
   </section>
 
   <section class="pantalla" id="muestra" hidden>
     <header class="cabecera">
+      <img class="logo logo-muestra" src="assets/juego/logo-todo-esto-es-nqn.svg" alt="Todo esto es Neuquén">
       <h2 class="subtitulo" id="muestra-titulo"></h2>
       <div class="tiempo"><i id="tiempo-muestra"></i></div>
     </header>
@@ -27,13 +36,14 @@
   </section>
 
   <section class="pantalla centrada" id="condiciones" hidden>
-    <h2 class="titulo" id="condiciones-titulo"></h2>
-    <p class="bajada" id="condiciones-texto"></p>
+    <img class="logo" src="assets/juego/logo-provincia.svg" alt="Provincia del Neuquén">
+    <h2 class="subtitulo" id="condiciones-titulo"></h2>
+    <h1 class="titulo" id="condiciones-texto"></h1>
     <button class="boton pulso" id="empezar" type="button"></button>
   </section>
 
   <section class="pantalla" id="juego" hidden>
-    <p class="logo logo-juego" id="juego-logo"></p>
+    <img class="logo logo-juego" src="assets/juego/logo-provincia.svg" alt="Provincia del Neuquén">
     <div class="estado">
       <span class="cuenta" id="cuenta"></span>
       <div class="intentos" id="intentos"></div>
@@ -51,7 +61,7 @@
 
   <section class="pantalla centrada" id="final" hidden>
     <div class="papelitos" id="papelitos"></div>
-    <p class="logo" id="final-logo"></p>
+    <img class="logo" src="assets/juego/logo-provincia.svg" alt="Provincia del Neuquén">
     <p class="resultado" id="final-resultado"></p>
     <h2 class="subtitulo" id="final-titulo"></h2>
     <h1 class="titulo" id="final-texto"></h1>

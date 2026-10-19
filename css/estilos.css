@@ -1,16 +1,24 @@
-/* Paleta y tipografías: se reemplazan por las del evento */
+/* Paleta y tipografía del diseño */
+@font-face {
+  font-family: "Chillax";
+  src: url("../assets/juego/fuente/Chillax-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-display: block;
+}
 :root {
   --sala: #14232E;
-  --pantalla: #E8F6EE;
-  --tinta: #1F3A4D;
-  --pendiente: #F6D44A;
-  --sombra-boton: #C9A420;
-  --encima: #FFE98A;
-  --acierto: #3DBE6E;
-  --borde-acierto: #23874A;
-  --error: #E8634A;
-  --display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
-  --texto: "Segoe UI", system-ui, sans-serif;
+  --pantalla: #E5E6CC;
+  --tinta: #02212B;
+  --azul: #2B3E4C;
+  --beige: #F4DFB9;
+  --encima: rgba(255, 255, 255, .35);
+  --acierto: #1CEA11;
+  --acierto-opacidad: .5;
+  --borde-acierto: #13A80B;
+  --error: #FF0808;
+  --error-opacidad: .6;
+  --display: "Chillax", "Segoe UI", system-ui, sans-serif;
+  --texto: "Chillax", "Segoe UI", system-ui, sans-serif;
   color-scheme: light;
 }
 
@@ -39,48 +47,59 @@ body {
 }
 .pantalla { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 4cqw; gap: 2.4cqw; }
 .pantalla[hidden] { display: none !important; }
-.centrada { justify-content: center; align-items: center; text-align: center; gap: 6cqw; }
+.centrada { justify-content: center; align-items: center; text-align: center; gap: 5cqw; }
 img { -webkit-user-drag: none; }
 
 #reinicio-oculto { position: absolute; top: 0; left: 0; width: 16cqw; height: 16cqw; z-index: 6; border-radius: 0 0 50% 0; }
-#reinicio-oculto.sosteniendo { background: radial-gradient(circle at 0 0, rgba(232,99,74,.35), transparent 70%); }
+#reinicio-oculto.sosteniendo { background: radial-gradient(circle at 0 0, rgba(255,8,8,.25), transparent 70%); }
+
+/* Decoración de las pantallas de texto (nubes y flores del diseño) */
+.deco { position: absolute; inset: 0; pointer-events: none; }
+.totem[data-pantalla="juego"] .deco, .totem[data-pantalla="muestra"] .deco { display: none; }
+.deco img { position: absolute; }
+.nubes { width: 72cqw; }
+.nubes-arriba { top: -3cqw; left: -6cqw; }
+.nubes-abajo { bottom: -8cqw; left: 14cqw; transform: scaleX(-1); }
+.flor { width: 30cqw; }
+.mutisia { top: 6cqw; right: -2cqw; width: 26cqw; }
+.amancay { bottom: 18cqw; left: -3cqw; }
+.jarilla { bottom: 2cqw; right: 2cqw; width: 24cqw; }
 
 /* Textos y botones */
-.titulo { font: 800 12cqw/0.95 var(--display); margin: 0; text-wrap: balance; }
-.subtitulo { font: 800 6cqw/1.1 var(--display); margin: 0; }
-.logo { font: 800 8cqw/1 var(--display); margin: 0 0 14cqw; }
-#inicio .subtitulo, #final .subtitulo { font-weight: 400; }
-#final .titulo { font-size: 10cqw; }
+.logo { width: 66cqw; margin: 0 0 10cqw; position: relative; }
+.titulo { font: 700 9.5cqw/1.12 var(--display); margin: 0; text-wrap: balance; position: relative; }
+.subtitulo { font: 500 6.2cqw/1.15 var(--display); margin: 0; position: relative; }
 .bajada { font-size: 4.4cqw; line-height: 1.35; max-width: 74cqw; margin: 0; }
 .ayuda { font-size: 3.4cqw; margin: 0; text-align: center; opacity: .7; }
-.resultado { font: 800 5cqw/1 var(--display); margin: 0; color: var(--borde-acierto); }
+.resultado { font: 600 5cqw/1 var(--display); margin: 0; color: var(--azul); position: relative; }
 .boton {
-  font: 800 5.6cqw/1 var(--display); border: 0; cursor: pointer;
-  background: var(--pendiente); color: var(--tinta);
-  padding: 3.6cqw 9cqw; border-radius: 99px;
-  box-shadow: 0 1.2cqw 0 var(--sombra-boton);
+  font: 500 6.2cqw/1 var(--display); border: 0; cursor: pointer; position: relative;
+  background: var(--tinta); color: var(--pantalla);
+  padding: 2.6cqw 11cqw; border-radius: 99px; margin-top: 8cqw;
 }
-.boton:active { transform: translateY(0.8cqw); box-shadow: 0 0.4cqw 0 var(--sombra-boton); }
-.boton-chico { font-size: 3.2cqw; padding: 1.6cqw 4.5cqw; box-shadow: 0 0.6cqw 0 var(--sombra-boton); }
+.boton:active { transform: scale(.96); }
+.boton-chico { font-size: 3.4cqw; padding: 1.4cqw 5cqw; margin: 0; }
 .pulso { animation: pulso 1.8s ease-in-out infinite; }
-@keyframes pulso { 50% { transform: scale(1.06); } }
+@keyframes pulso { 50% { transform: scale(1.05); } }
 
 /* Muestra */
-.cabecera { display: flex; flex-direction: column; gap: 1.6cqw; padding-top: 4cqw; }
-.tiempo { height: 1.6cqw; border-radius: 99px; background: #CFE6DA; overflow: hidden; }
-.tiempo i { display: block; height: 100%; width: 100%; background: var(--borde-acierto); transform-origin: left; }
+.cabecera { display: flex; flex-direction: column; align-items: center; gap: 1.6cqw; padding-top: 2cqw; }
+.logo-muestra { width: 58cqw; margin: 0; }
+.cabecera .subtitulo { font-size: 4.6cqw; }
+.tiempo { align-self: stretch; height: 1.4cqw; border-radius: 99px; background: rgba(2,33,43,.12); overflow: hidden; }
+.tiempo i { display: block; height: 100%; width: 100%; background: var(--azul); transform-origin: left; }
 .tiempo i.corriendo { animation-name: tiempo; animation-timing-function: linear; animation-fill-mode: forwards; }
 @keyframes tiempo { to { transform: scaleX(0); } }
-.muestra { flex: 1; min-height: 0; display: grid; place-items: center; }
-.muestra img, .muestra svg { width: 100%; height: 100%; object-fit: contain; }
+.muestra { flex: 1; min-height: 0; position: relative; }
+.muestra img, .muestra svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 
 /* Juego: logo y barra de intentos arriba; mapa grande; productos desordenados a la derecha; leyenda y Volver abajo a la derecha */
 #juego { padding: 3cqw 3cqw 4cqw; gap: 1.6cqw; }
-.logo-juego { margin: 0; text-align: center; font-size: 7cqw; }
+.logo-juego { width: 50cqw; margin: 0 auto; }
 .estado { display: flex; flex-direction: column; gap: 1.2cqw; }
-.cuenta { font: 800 4.4cqw/1 var(--display); }
+.cuenta { font: 600 4.4cqw/1 var(--display); }
 .intentos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 1cqw; }
-.intentos i { height: 1.8cqw; border-radius: 99px; background: #CFE6DA; transition: background .3s; }
+.intentos i { height: 1.8cqw; border-radius: 99px; background: rgba(2,33,43,.12); transition: background .3s; }
 .intentos i.bien { background: var(--acierto); }
 .intentos i.mal { background: var(--error); }
 
@@ -89,19 +108,21 @@ img { -webkit-user-drag: none; }
 .bandeja { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
 .bandeja .figura { position: absolute; pointer-events: auto; }
 .pie-lateral { position: absolute; inset: 0; pointer-events: none; }
+.pie-lateral .leyenda[hidden] { display: none; }
 .pie-lateral .leyenda { position: absolute; left: var(--leyenda-x, 50%); bottom: var(--leyenda-y, 4%); }
 .pie-lateral .boton-chico { position: absolute; right: 0; bottom: 0; pointer-events: auto; }
 
 .mapa { width: 100%; height: 100%; min-height: 0; overflow: visible; }
-.mapa .region { stroke: var(--tinta); stroke-width: 1.4; stroke-linejoin: round; fill: var(--pendiente); fill-rule: evenodd; transition: fill .3s; }
+.mapa .region { stroke: var(--tinta); stroke-width: 1.4; stroke-linejoin: round; fill: #F6D44A; fill-rule: evenodd; transition: fill .3s, fill-opacity .3s; }
 .mapa.con-imagen .region { fill: transparent; stroke: transparent; }
 .mapa .region.encima { fill: var(--encima); }
 .mapa .region.lograda, .mapa.con-imagen .region.lograda { fill: var(--acierto); stroke: var(--borde-acierto); }
 .mapa .region.error, .mapa.con-imagen .region.error { fill: var(--error); stroke: var(--error); }
-.mapa.con-imagen .region.lograda, .mapa.con-imagen .region.error { fill-opacity: .55; }
+.mapa.con-imagen .region.lograda { fill-opacity: var(--acierto-opacidad); }
+.mapa.con-imagen .region.error { fill-opacity: var(--error-opacidad); }
 .mapa .num { pointer-events: none; }
 .mapa .num circle { fill: var(--pantalla); stroke: var(--tinta); stroke-width: 1.2; }
-.mapa .num text { font: 800 10px var(--display); fill: var(--tinta); text-anchor: middle; dominant-baseline: central; }
+.mapa .num text { font: 700 10px var(--display); fill: var(--tinta); text-anchor: middle; dominant-baseline: central; }
 .mapa .colocada { pointer-events: none; animation: encaja .5s cubic-bezier(.3, 1.6, .5, 1); transform-box: fill-box; transform-origin: center; }
 @keyframes encaja { from { transform: scale(1.8); opacity: .7; } }
 
@@ -109,7 +130,7 @@ img { -webkit-user-drag: none; }
 .leyenda li { display: flex; gap: 1cqw; align-items: center; }
 .leyenda b {
   flex: none; width: 3.6cqw; height: 3.6cqw; border-radius: 50%; display: grid; place-items: center;
-  border: 0.3cqw solid var(--tinta); font: 800 2.2cqw/1 var(--display);
+  border: 0.3cqw solid var(--tinta); font: 700 2.2cqw/1 var(--display);
 }
 
 /* Cartel de acierto o error: aparece sobre el mapa y se va solo */
@@ -119,8 +140,8 @@ img { -webkit-user-drag: none; }
   box-shadow: 0 1.5cqw 4cqw rgba(31,58,77,.25); pointer-events: none;
 }
 .tarjeta[hidden] { display: none; }
-.tarjeta .eti { font: 700 2.6cqw/1 var(--texto); letter-spacing: .05em; text-transform: uppercase; color: var(--borde-acierto); }
-.tarjeta h3 { font: 800 4.6cqw/1.05 var(--display); margin: 1cqw 0 0.6cqw; }
+.tarjeta .eti { font: 600 2.6cqw/1 var(--texto); letter-spacing: .05em; text-transform: uppercase; color: var(--borde-acierto); }
+.tarjeta h3 { font: 600 4.6cqw/1.1 var(--display); margin: 1cqw 0 0.6cqw; }
 .tarjeta p { margin: 0; font-size: 3.2cqw; line-height: 1.35; }
 .tarjeta.nueva { animation: sube .35s cubic-bezier(.3, 1.4, .5, 1); }
 .tarjeta { transition: top .45s cubic-bezier(.3, 1, .5, 1), transform .45s cubic-bezier(.3, 1, .5, 1); transform-origin: top center; }

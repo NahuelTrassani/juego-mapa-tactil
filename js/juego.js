@@ -21,6 +21,7 @@ function cancelarTimers() {
 
 function mostrar(id) {
   pantallaActual = id;
+  $("#totem").dataset.pantalla = id;
   ultimoToque = Date.now();
   for (const s of document.querySelectorAll(".pantalla")) s.hidden = s.id !== id;
 }
@@ -58,9 +59,6 @@ function avisarSiFalta(img, prod) {
 function cargarTextos() {
   const t = CONFIG.textos;
   document.title = t.titulo;
-  $("#inicio-logo").textContent = t.logo;
-  $("#juego-logo").textContent = t.logo;
-  $("#final-logo").textContent = t.logo;
   $("#inicio-titulo").textContent = t.inicio.titulo;
   $("#inicio-texto").textContent = t.inicio.texto;
   $("#muestra-titulo").textContent = t.muestra.titulo;
@@ -191,7 +189,7 @@ function lugaresLibres(tam, cantidad) {
   const svg = $("#mapa");
   const inversa = svg.getScreenCTM().inverse();
   const regiones = [...svg.querySelectorAll(".region")];
-  const tapados = [$("#leyenda"), $("#volver-juego")].map(e => e.getBoundingClientRect());
+  const tapados = [...[$("#leyenda"), $("#volver-juego")].map(e => e.getBoundingClientRect()), ...zonasOcupadas()];
   const PASO = tablero.width / 80;
   const cols = Math.ceil(tablero.width / PASO), filas = Math.ceil(tablero.height / PASO);
 
@@ -235,7 +233,17 @@ function lugaresLibres(tam, cantidad) {
   return mejor;
 }
 
+// Zonas del dibujo que no pueden taparse (la leyenda del mapa), en coordenadas de pantalla
+function zonasOcupadas() {
+  const ctm = $("#mapa").getScreenCTM();
+  return (CONFIG.mapa.zonasOcupadas || []).map(([x0, y0, x1, y1]) => {
+    const a = new DOMPoint(x0, y0).matrixTransform(ctm), b = new DOMPoint(x1, y1).matrixTransform(ctm);
+    return { left: a.x, top: a.y, right: b.x, bottom: b.y };
+  });
+}
+
 function armarLeyenda() {
+  $("#leyenda").hidden = !CONFIG.mostrarLeyenda;
   $("#leyenda").replaceChildren(...CONFIG.regiones.map(r => {
     const li = crear("li");
     li.append(crear("b", "", r.id), r.nombre);
@@ -344,7 +352,7 @@ function dejarDondeLoSoltaron(el) {
   const y = Math.min(Math.max(r.top, tablero.top), tablero.bottom - r.height);
   const choca = (o) => x < o.right && x + r.width > o.left && y < o.bottom && y + r.height > o.top;
   const otros = [...$("#bandeja").children].filter(f => f !== el);
-  const obstaculos = [$("#leyenda"), $("#volver-juego"), ...otros].map(o => o.getBoundingClientRect());
+  const obstaculos = [...[$("#leyenda"), $("#volver-juego"), ...otros].map(o => o.getBoundingClientRect()), ...zonasOcupadas()];
   if (!obstaculos.some(choca)) {
     el.dataset.x = `${(x - tablero.left) / tablero.width * 100}%`;
     el.dataset.y = `${(y - tablero.top) / tablero.height * 100}%`;
@@ -410,7 +418,8 @@ function acierto(el, reg, prod, punto) {
   $("#mapa").append(productoEnMapa(prod, punto));
   const region = regionDe(prod);
   const cierre = partida.terminada ? CONFIG.textos.vamosAlResultado : quedan();
-  mostrarTarjeta("bien", `${CONFIG.textos.etiquetaAcierto} · ${region.nombre}`, prod.titulo, `${prod.texto} ${cierre}`, partida.terminada);
+  const texto = prod.texto ? `${prod.texto} ${cierre}` : cierre;
+  mostrarTarjeta("bien", `${CONFIG.textos.etiquetaAcierto} · ${region.nombre}`, prod.titulo || prod.etiqueta, texto, partida.terminada);
 }
 
 function error(el, reg, prod) {
