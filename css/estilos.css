@@ -147,6 +147,7 @@ img { -webkit-user-drag: none; }
 .tarjeta { transition: top .45s cubic-bezier(.3, 1, .5, 1), transform .45s cubic-bezier(.3, 1, .5, 1); transform-origin: top center; }
 .tarjeta.arriba { top: -17cqw; transform: scale(.85); }
 .tarjeta.arriba p { display: none; }
+.tarjeta.se-va { transition: transform var(--salida, 2s) ease-in, opacity var(--salida, 2s) ease-in; transform: translateY(-28cqw) scale(.9); opacity: 0; }
 .tarjeta.sale { animation: baja .3s ease-in forwards; }
 .bandeja.apagada .figura { opacity: .3; pointer-events: none; transition: opacity .3s; }
 @keyframes sube { from { transform: translateY(4cqw) scale(.95); opacity: 0; } }

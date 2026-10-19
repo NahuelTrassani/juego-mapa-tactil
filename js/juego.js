@@ -186,6 +186,7 @@ function ubicarProductos(botones) {
 // Lugares en el espacio libre a la derecha del mapa, sin tocar regiones, la leyenda ni el botón
 function lugaresLibres(tam, cantidad) {
   const tablero = $(".tablero").getBoundingClientRect();
+  if (!tablero.width || !tablero.height || !tam.width || !tam.height) return [];
   const svg = $("#mapa");
   const inversa = svg.getScreenCTM().inverse();
   const regiones = [...svg.querySelectorAll(".region")];
@@ -251,7 +252,8 @@ function armarLeyenda() {
   }));
 }
 
-// Cartel: aparece en el medio, sube para no estorbar y se va solo. Con fija: true queda en el medio (último intento)
+// Cartel: aparece en el medio y se va solo. Con descripción: se lee en el medio y después sube desvaneciéndose.
+// Sin descripción: sube chico arriba y se va. Con fija: true queda en el medio (último intento)
 function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   const t = $("#tarjeta");
   t.className = `tarjeta nueva ${clase}`.trim();
@@ -259,13 +261,22 @@ function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   t.hidden = false;
   clearTimeout(timerTarjeta);
   if (fija) return;
+  const ocultar = (ms) => { timerTarjeta = setTimeout(() => { t.hidden = true; }, ms); };
+  if (texto.length > 60) {
+    timerTarjeta = setTimeout(() => {
+      t.style.setProperty("--salida", `${CONFIG.msTarjetaSalida}ms`);
+      t.classList.add("se-va");
+      ocultar(CONFIG.msTarjetaSalida);
+    }, CONFIG.msTarjetaLectura);
+    return;
+  }
   timerTarjeta = setTimeout(() => {
     t.classList.add("arriba");
     timerTarjeta = setTimeout(() => {
       t.classList.add("sale");
-      timerTarjeta = setTimeout(() => { t.hidden = true; }, 300);
+      ocultar(300);
     }, CONFIG.msTarjeta);
-  }, texto.length > 60 ? CONFIG.msTarjetaLectura : CONFIG.msTarjetaCentro);
+  }, CONFIG.msTarjetaCentro);
 }
 
 function actualizarCuenta() {
