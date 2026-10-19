@@ -1,1 +1,8 @@
 herramientas/
+
+# Originales de diseño (no van al repo; el juego usa assets/juego)
+assets/COLORES - TIPOGRAFIA - TEXTOS/
+assets/FONDO - BOTONES/
+assets/MAPAS Y REGIONES/
+assets/STIKERS/
+assets/*.zip
