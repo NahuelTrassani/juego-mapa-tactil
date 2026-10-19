@@ -144,14 +144,9 @@ img { -webkit-user-drag: none; }
 .tarjeta h3 { font: 600 4.6cqw/1.1 var(--display); margin: 1cqw 0 0.6cqw; }
 .tarjeta p { margin: 0; font-size: 3.2cqw; line-height: 1.35; }
 .tarjeta.nueva { animation: sube .35s cubic-bezier(.3, 1.4, .5, 1); }
-.tarjeta { transition: top .45s cubic-bezier(.3, 1, .5, 1), transform .45s cubic-bezier(.3, 1, .5, 1); transform-origin: top center; }
-.tarjeta.arriba { top: -17cqw; transform: scale(.85); }
-.tarjeta.arriba p { display: none; }
-.tarjeta.se-va { transition: transform var(--salida, 2s) ease-in, opacity var(--salida, 2s) ease-in; transform: translateY(-28cqw) scale(.9); opacity: 0; }
-.tarjeta.sale { animation: baja .3s ease-in forwards; }
+.tarjeta.se-va { transition: transform var(--salida, 2s) ease-in-out, opacity var(--salida, 2s) linear; transform: translateY(-28cqw) scale(.9); opacity: 0; }
 .bandeja.apagada .figura { opacity: .3; pointer-events: none; transition: opacity .3s; }
 @keyframes sube { from { transform: translateY(4cqw) scale(.95); opacity: 0; } }
-@keyframes baja { to { opacity: 0; } }
 .tarjeta.bien { border-color: var(--borde-acierto); }
 .tarjeta.error { border-color: var(--error); }
 .tarjeta.error .eti { color: var(--error); }

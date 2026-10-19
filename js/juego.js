@@ -252,8 +252,7 @@ function armarLeyenda() {
   }));
 }
 
-// Cartel: aparece en el medio y se va solo. Con descripción: se lee en el medio y después sube desvaneciéndose.
-// Sin descripción: sube chico arriba y se va. Con fija: true queda en el medio (último intento)
+// Cartel: 3 s quieto en el medio, después sube desvaneciéndose (2 s) y se va. Con fija: true queda en el medio (último intento)
 function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   const t = $("#tarjeta");
   t.className = `tarjeta nueva ${clase}`.trim();
@@ -261,22 +260,11 @@ function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   t.hidden = false;
   clearTimeout(timerTarjeta);
   if (fija) return;
-  const ocultar = (ms) => { timerTarjeta = setTimeout(() => { t.hidden = true; }, ms); };
-  if (texto.length > 60) {
-    timerTarjeta = setTimeout(() => {
-      t.style.setProperty("--salida", `${CONFIG.msTarjetaSalida}ms`);
-      t.classList.add("se-va");
-      ocultar(CONFIG.msTarjetaSalida);
-    }, CONFIG.msTarjetaLectura);
-    return;
-  }
   timerTarjeta = setTimeout(() => {
-    t.classList.add("arriba");
-    timerTarjeta = setTimeout(() => {
-      t.classList.add("sale");
-      ocultar(300);
-    }, CONFIG.msTarjeta);
-  }, CONFIG.msTarjetaCentro);
+    t.style.setProperty("--salida", `${CONFIG.msTarjetaSalida}ms`);
+    t.classList.add("se-va");
+    timerTarjeta = setTimeout(() => { t.hidden = true; }, CONFIG.msTarjetaSalida);
+  }, CONFIG.msTarjetaLectura);
 }
 
 function actualizarCuenta() {

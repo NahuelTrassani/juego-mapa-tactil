@@ -3,10 +3,8 @@ const CONFIG = {
   intentos: 5,
   msAntesDelFinal: 1800,
   msMarcaError: 1200,
-  msTarjetaCentro: 800,
   msTarjetaLectura: 3000,
   msTarjetaSalida: 2000,
-  msTarjeta: 3000,
   segundos: {
     inicio: 5,
     muestra: 8,
