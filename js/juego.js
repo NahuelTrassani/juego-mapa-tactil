@@ -408,6 +408,13 @@ function soltar(e) {
   if (partida.terminada) {
     $("#bandeja").classList.add("apagada");
     programar(terminar, CONFIG.msAntesDelFinal);
+    // Un toque en la pantalla pasa al resultado sin esperar
+    $("#juego").addEventListener("pointerdown", () => {
+      if (pantallaActual === "juego" && partida.terminada) {
+        cancelarTimers();
+        terminar();
+      }
+    }, { once: true });
   }
 }
 

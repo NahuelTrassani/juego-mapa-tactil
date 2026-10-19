@@ -1,7 +1,7 @@
 // Contenido del evento. Para otro evento se cambia este archivo, no la lógica.
 const CONFIG = {
   intentos: 5,
-  msAntesDelFinal: 1800,
+  msAntesDelFinal: 5000,
   msMarcaError: 1200,
   msTarjetaLectura: 3000,
   msTarjetaSalida: 2000,
