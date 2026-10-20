@@ -96,6 +96,29 @@ function armarMapa(svg) {
   }
 }
 
+// El sticker colocado no puede sobresalir de su región: si sobresale, se corre hacia adentro
+function dentroDeRegion(reg, [x, y]) {
+  const m = CONFIG.mapa.tamProducto * 0.38;
+  const adentro = (px, py) => reg.isPointInFill(new DOMPoint(px, py));
+  const cabe = (px, py) => [[0, 0], [-m, -m], [m, -m], [-m, m], [m, m]].every(([dx, dy]) => adentro(px + dx, py + dy));
+  if (cabe(x, y)) return [x, y];
+  const b = reg.getBBox();
+  let centro = [b.x + b.width / 2, b.y + b.height / 2];
+  if (!cabe(...centro)) {
+    let mejor = null;
+    for (let i = 1; i < 30; i++) for (let j = 1; j < 30; j++) {
+      const px = b.x + b.width * i / 30, py = b.y + b.height * j / 30;
+      if (cabe(px, py)) { const d = (px - x) ** 2 + (py - y) ** 2; if (!mejor || d < mejor[2]) mejor = [px, py, d]; }
+    }
+    if (mejor) centro = [mejor[0], mejor[1]];
+  }
+  for (let t = 0.1; t <= 1.0001; t += 0.1) {
+    const px = x + (centro[0] - x) * t, py = y + (centro[1] - y) * t;
+    if (cabe(px, py)) return [px, py];
+  }
+  return centro;
+}
+
 function productoEnMapa(prod, [x, y]) {
   const t = CONFIG.mapa.tamProducto;
   return crearSVG("image", { href: prod.imagen, x: x - t / 2, y: y - t / 2, width: t, height: t, class: "colocada" });
@@ -213,7 +236,9 @@ function lugaresLibres(tam, cantidad) {
   // Lugares posibles a la derecha (el área incluye el corrimiento al azar)
   const w = tam.width * 1.1, h = tam.height * 1.06;
   const posibles = [];
-  for (let y = 0; y + h <= tablero.height; y += PASO) {
+  const zonas = zonasOcupadas();
+  const limite = zonas.length ? Math.min(...zonas.map(z => z.top)) - tablero.top : tablero.height;
+  for (let y = 0; y + h <= limite; y += PASO) {
     for (let x = tablero.width - w; x >= tablero.width * 0.4; x -= PASO) {
       if (libre(x, y, w, h)) posibles.push({ x, y, w: tam.width, h: tam.height });
     }
@@ -256,7 +281,7 @@ function armarLeyenda() {
 function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
   const t = $("#tarjeta");
   t.className = `tarjeta nueva ${clase}`.trim();
-  t.replaceChildren(crear("div", "eti", etiqueta), crear("h3", "", titulo), crear("p", "", texto));
+  t.replaceChildren(...[etiqueta && crear("div", "eti", etiqueta), crear("h3", "", titulo), texto && crear("p", "", texto)].filter(Boolean));
   t.hidden = false;
   clearTimeout(timerTarjeta);
   if (fija) return;
@@ -273,11 +298,6 @@ function actualizarCuenta() {
     ? CONFIG.textos.terminaste
     : `Intento ${partida.resultados.length + 1} de ${total}`;
   $("#intentos").replaceChildren(...Array.from({ length: total }, (_, k) => crear("i", partida.resultados[k] || "")));
-}
-
-function quedan() {
-  const n = CONFIG.intentos - partida.resultados.length;
-  return n === 1 ? "Te queda 1 intento." : `Te quedan ${n} intentos.`;
 }
 
 function empezarPartida() {
@@ -421,26 +441,22 @@ function soltar(e) {
 function acierto(el, reg, prod, punto) {
   el.remove();
   reg.classList.add("lograda");
-  $("#mapa").append(productoEnMapa(prod, punto));
-  const region = regionDe(prod);
-  const cierre = partida.terminada ? CONFIG.textos.vamosAlResultado : quedan();
-  const texto = prod.texto ? `${prod.texto} ${cierre}` : cierre;
-  mostrarTarjeta("bien", `${CONFIG.textos.etiquetaAcierto} · ${region.nombre}`, prod.titulo || prod.etiqueta, texto, partida.terminada);
+  $("#mapa").append(productoEnMapa(prod, dentroDeRegion(reg, punto)));
+  mostrarTarjeta("bien", "", CONFIG.textos.acierto, partida.terminada ? CONFIG.textos.vamosAlResultado : "", partida.terminada);
 }
 
 function error(el, reg, prod) {
   devolver(el);
   reg.classList.add("error");
   programar(() => reg.classList.remove("error"), CONFIG.msMarcaError);
-  const region = CONFIG.regiones.find(r => r.id === Number(reg.dataset.region));
-  const texto = partida.terminada ? CONFIG.textos.vamosAlResultado : `Probá con otra región. ${quedan()}`;
-  mostrarTarjeta("error", CONFIG.textos.etiquetaError, `${prod.etiqueta} no va en ${region.nombre}`, texto, partida.terminada);
+  mostrarTarjeta("error", "", CONFIG.textos.error, partida.terminada ? CONFIG.textos.vamosAlResultado : "", partida.terminada);
 }
 
 function terminar() {
   const aciertos = partida.resultados.filter(r => r === "bien").length;
   const finales = CONFIG.textos.finales;
   const final = finales.find(f => aciertos >= f.desde && aciertos <= f.hasta) || finales[finales.length - 1];
+  $("#final-resultado").hidden = !CONFIG.mostrarResultado;
   $("#final-resultado").textContent = `Acertaste ${aciertos} de ${partida.resultados.length}`;
   $("#final-titulo").textContent = final.titulo;
   $("#final-texto").textContent = final.texto;

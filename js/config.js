@@ -1,10 +1,10 @@
 // Contenido del evento. Para otro evento se cambia este archivo, no la lógica.
 const CONFIG = {
   intentos: 5,
-  msAntesDelFinal: 5000,
+  msAntesDelFinal: 2000,
   msMarcaError: 1200,
-  msTarjetaLectura: 3000,
-  msTarjetaSalida: 2000,
+  msTarjetaLectura: 1000,
+  msTarjetaSalida: 1000,
   segundos: {
     inicio: 5,
     muestra: 8,
@@ -14,7 +14,8 @@ const CONFIG = {
   },
   mostrarEtiquetas: false,
   mostrarLeyenda: false,
-  productosPorPartida: { min: 7, max: 7 },
+  productosPorPartida: { min: 6, max: 6 },
+  mostrarResultado: false,
 
   textos: {
     titulo: "¿Cuánto conocés Neuquén?",
@@ -37,8 +38,8 @@ const CONFIG = {
       titulo: "¿Dónde va cada producto?",
       texto: "Arrastralo con el dedo hasta su región del mapa.",
     },
-    etiquetaAcierto: "¡Correcto!",
-    etiquetaError: "Incorrecto",
+    acierto: "¡Acertaste!",
+    error: "¡Volvé a intentar!",
     vamosAlResultado: "¡Terminaste! Vamos a tu resultado…",
     terminaste: "¡Terminaste!",
     botonVolver: "Volver",

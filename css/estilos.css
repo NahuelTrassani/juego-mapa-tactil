@@ -19,7 +19,7 @@
   --error-opacidad: .6;
   --display: "Chillax", "Segoe UI", system-ui, sans-serif;
   --texto: "Chillax", "Segoe UI", system-ui, sans-serif;
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 * { box-sizing: border-box; }
@@ -61,8 +61,8 @@ img { -webkit-user-drag: none; }
 .nubes-arriba { top: -3cqw; left: -6cqw; }
 .nubes-abajo { bottom: -8cqw; left: 14cqw; transform: scaleX(-1); }
 .flor { width: 30cqw; }
-.mutisia { top: 6cqw; right: -2cqw; width: 26cqw; }
-.amancay { bottom: 18cqw; left: -3cqw; }
+.mutisia { top: 6cqw; right: 2cqw; width: 24cqw; }
+.amancay { bottom: 18cqw; left: 2cqw; width: 28cqw; }
 .jarilla { bottom: 2cqw; right: 2cqw; width: 24cqw; }
 
 /* Textos y botones */
@@ -71,6 +71,7 @@ img { -webkit-user-drag: none; }
 .subtitulo { font: 500 6.2cqw/1.15 var(--display); margin: 0; position: relative; }
 .bajada { font-size: 4.4cqw; line-height: 1.35; max-width: 74cqw; margin: 0; }
 .ayuda { font-size: 3.4cqw; margin: 0; text-align: center; opacity: .7; }
+.resultado[hidden] { display: none; }
 .resultado { font: 600 5cqw/1 var(--display); margin: 0; color: var(--azul); position: relative; }
 .boton {
   font: 500 6.2cqw/1 var(--display); border: 0; cursor: pointer; position: relative;
