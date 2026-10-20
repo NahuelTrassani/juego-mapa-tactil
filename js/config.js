@@ -43,7 +43,7 @@ const CONFIG = {
     error: "¡Volvé a intentar!",
     vamosAlResultado: "¡Terminaste! Vamos a tu resultado…",
     terminaste: "¡Terminaste!",
-    botonVolver: "Volver",
+    botonVolver: "Salir",
     botonOtraVez: "Volver",
     finales: [
       {

@@ -548,6 +548,14 @@ $("#empezar").addEventListener("click", () => { if (CONFIG.productos.length) emp
 $("#volver-juego").addEventListener("click", volverAlInicio);
 $("#volver-final").addEventListener("click", volverAlInicio);
 
+// Precarga: las imágenes quedan listas mientras se ve el inicio, así no tardan la primera vez
+const precargadas = [CONFIG.mapa.imagen, CONFIG.muestra.imagen, ...CONFIG.productos.map(p => p.imagen)].filter(Boolean).map(u => {
+  const img = new Image();
+  img.src = u;
+  img.decode().catch(() => {});
+  return img;
+});
+
 revisarConfig();
 cargarTextos();
 vigilarInactividad();
