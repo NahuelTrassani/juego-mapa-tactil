@@ -4,6 +4,7 @@ const CONFIG = {
   msAntesDelFinal: 2000,
   msMarcaError: 1200,
   msTarjetaLectura: 1000,
+  msTarjetaInicial: 4000,
   msTarjetaSalida: 1000,
   segundos: {
     inicio: 5,

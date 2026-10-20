@@ -150,6 +150,9 @@ img { -webkit-user-drag: none; }
 @keyframes sube { from { transform: translateY(4cqw) scale(.95); opacity: 0; } }
 .tarjeta.bien { border-color: var(--borde-acierto); }
 .tarjeta.error { border-color: var(--error); }
+.tarjeta.bien, .tarjeta.error { left: 50%; right: auto; translate: -50% 0; width: max-content; max-width: 80cqw; text-align: center; padding: 1.6cqw 5cqw; }
+.tarjeta.bien h3, .tarjeta.error h3 { margin: 0; }
+.tarjeta.bien p, .tarjeta.error p { margin-top: 0.6cqw; }
 .tarjeta.error .eti { color: var(--error); }
 
 .figura {

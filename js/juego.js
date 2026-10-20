@@ -278,7 +278,7 @@ function armarLeyenda() {
 }
 
 // Cartel: 3 s quieto en el medio, después sube desvaneciéndose (2 s) y se va. Con fija: true queda en el medio (último intento)
-function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
+function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false, lectura = CONFIG.msTarjetaLectura) {
   const t = $("#tarjeta");
   t.className = `tarjeta nueva ${clase}`.trim();
   t.replaceChildren(...[etiqueta && crear("div", "eti", etiqueta), crear("h3", "", titulo), texto && crear("p", "", texto)].filter(Boolean));
@@ -289,7 +289,7 @@ function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false) {
     t.style.setProperty("--salida", `${CONFIG.msTarjetaSalida}ms`);
     t.classList.add("se-va");
     timerTarjeta = setTimeout(() => { t.hidden = true; }, CONFIG.msTarjetaSalida);
-  }, CONFIG.msTarjetaLectura);
+  }, lectura);
 }
 
 function actualizarCuenta() {
@@ -309,7 +309,7 @@ function empezarPartida() {
   armarLeyenda();
   armarBandeja();
   const t = CONFIG.textos.tarjetaInicial;
-  mostrarTarjeta("", t.etiqueta, t.titulo, t.texto);
+  mostrarTarjeta("", t.etiqueta, t.titulo, t.texto, false, CONFIG.msTarjetaInicial);
   actualizarCuenta();
 }
 
