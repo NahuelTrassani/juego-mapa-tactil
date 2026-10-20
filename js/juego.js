@@ -7,6 +7,7 @@ let pantallaActual = "inicio";
 let ultimoToque = Date.now();
 let timers = [];
 let timerTarjeta = null;
+let repaso = false;
 
 // Timers de la partida: se cancelan todos al volver al inicio
 function programar(fn, ms) {
@@ -149,6 +150,7 @@ function armarMuestra() {
 
 function mostrarMuestra() {
   cancelarTimers();
+  repaso = false;
   armarMuestra();
   const barra = $("#tiempo-muestra");
   barra.classList.remove("corriendo");
@@ -161,7 +163,27 @@ function mostrarMuestra() {
 
 function irACondiciones() {
   cancelarTimers();
+  if (repaso) {
+    repaso = false;
+    mostrar("juego");
+    return;
+  }
   mostrar("condiciones");
+}
+
+// Flecha de atrás: vuelve una pantalla; desde el juego muestra el mapa completo y retoma la partida
+function repasarMapa() {
+  for (const r of document.querySelectorAll("#mapa .region.error")) r.classList.remove("error");
+  $("#tarjeta").hidden = true;
+  mostrarMuestra();
+  repaso = true;
+}
+
+function irAtras() {
+  if (pantallaActual === "muestra") repaso ? irACondiciones() : volverAlInicio();
+  else if (pantallaActual === "condiciones") mostrarMuestra();
+  else if (pantallaActual === "juego" && !partida.terminada) repasarMapa();
+  else if (pantallaActual === "final") volverAlInicio();
 }
 
 // Juego
@@ -475,6 +497,7 @@ function terminar() {
 function volverAlInicio() {
   cancelarTimers();
   cancelarArrastre();
+  repaso = false;
   mostrar("inicio");
   programar(mostrarMuestra, CONFIG.segundos.inicio * 1000);
 }
@@ -489,15 +512,14 @@ function vigilarInactividad() {
   }, 2000);
 }
 
-// Reinicio oculto: 2 s apretando la esquina superior izquierda
-function activarReinicioOculto() {
-  const z = $("#reinicio-oculto");
+// Esquina oculta: arriba a la derecha 5 s cierra el juego
+function activarEsquinaOculta(z, ms, accion) {
   let timer = null;
   const cortar = () => { clearTimeout(timer); timer = null; z.classList.remove("sosteniendo"); };
   z.addEventListener("pointerdown", (e) => {
     e.stopPropagation();
     z.classList.add("sosteniendo");
-    timer = setTimeout(() => { cortar(); volverAlInicio(); }, 2000);
+    timer = setTimeout(() => { cortar(); accion(); }, ms);
   });
   z.addEventListener("pointerup", cortar);
   z.addEventListener("pointerleave", cortar);
@@ -529,5 +551,6 @@ $("#volver-final").addEventListener("click", volverAlInicio);
 revisarConfig();
 cargarTextos();
 vigilarInactividad();
-activarReinicioOculto();
+$("#atras").addEventListener("click", irAtras);
+activarEsquinaOculta($("#cierre-oculto"), 5000, () => window.close());
 volverAlInicio();

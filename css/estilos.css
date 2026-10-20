@@ -50,8 +50,15 @@ body {
 .centrada { justify-content: center; align-items: center; text-align: center; gap: 5cqw; }
 img { -webkit-user-drag: none; }
 
-#reinicio-oculto { position: absolute; top: 0; left: 0; width: 16cqw; height: 16cqw; z-index: 6; border-radius: 0 0 50% 0; }
-#reinicio-oculto.sosteniendo { background: radial-gradient(circle at 0 0, rgba(255,8,8,.25), transparent 70%); }
+.atras {
+  position: absolute; top: 2.5cqw; left: 2.5cqw; z-index: 6; width: 8cqw; height: 8cqw; padding: 1.6cqw;
+  border: 0; border-radius: 50%; background: rgba(2,33,43,.08); cursor: pointer;
+}
+.atras svg { display: block; width: 100%; height: 100%; fill: none; stroke: var(--tinta); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.atras:active { transform: scale(.92); }
+.totem[data-pantalla="inicio"] .atras { display: none; }
+#cierre-oculto { position: absolute; top: 0; right: 0; width: 16cqw; height: 16cqw; z-index: 6; border-radius: 0 0 0 50%; }
+#cierre-oculto.sosteniendo { background: radial-gradient(circle at 100% 0, rgba(255,8,8,.25), transparent 70%); }
 
 /* Decoración de las pantallas de texto (nubes y flores del diseño) */
 .deco { position: absolute; inset: 0; pointer-events: none; }
@@ -111,7 +118,7 @@ img { -webkit-user-drag: none; }
 .pie-lateral { position: absolute; inset: 0; pointer-events: none; }
 .pie-lateral .leyenda[hidden] { display: none; }
 .pie-lateral .leyenda { position: absolute; left: var(--leyenda-x, 50%); bottom: var(--leyenda-y, 4%); }
-.pie-lateral .boton-chico { position: absolute; right: 0; bottom: -3cqw; pointer-events: auto; }
+.pie-lateral .boton-chico { position: absolute; right: 0; bottom: -3cqw; pointer-events: auto; font-size: 2.8cqw; padding: 1.1cqw 4cqw; }
 
 .mapa { width: 100%; height: 100%; min-height: 0; overflow: visible; }
 .mapa .region { stroke: var(--tinta); stroke-width: 1.4; stroke-linejoin: round; fill: #F6D44A; fill-rule: evenodd; transition: fill .3s, fill-opacity .3s; }
