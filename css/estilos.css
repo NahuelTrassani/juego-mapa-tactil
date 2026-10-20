@@ -97,10 +97,10 @@ img { -webkit-user-drag: none; }
 /* Juego: logo y barra de intentos arriba; mapa grande; productos desordenados a la derecha; leyenda y Volver abajo a la derecha */
 #juego { padding: 3cqw 3cqw 4cqw; gap: 1.6cqw; }
 .logo-juego { width: 50cqw; margin: 0 auto; }
-.estado { display: flex; flex-direction: column; gap: 1.2cqw; }
-.cuenta { font: 600 4.4cqw/1 var(--display); }
+.estado { display: flex; flex-direction: column; gap: 0.8cqw; }
+.cuenta { font: 500 3cqw/1 var(--display); }
 .intentos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 1cqw; }
-.intentos i { height: 1.8cqw; border-radius: 99px; background: rgba(2,33,43,.12); transition: background .3s; }
+.intentos i { height: 1cqw; border-radius: 99px; background: rgba(2,33,43,.12); transition: background .3s; }
 .intentos i.bien { background: var(--acierto); }
 .intentos i.mal { background: var(--error); }
 
