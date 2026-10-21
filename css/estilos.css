@@ -71,6 +71,13 @@ img { -webkit-user-drag: none; }
 .mutisia { top: 6cqw; right: 2cqw; width: 24cqw; }
 .amancay { bottom: 18cqw; left: 2cqw; width: 28cqw; }
 .jarilla { bottom: 2cqw; right: 2cqw; width: 24cqw; }
+.totem[data-pantalla="final"] .mutisia, .totem[data-pantalla="final"] .amancay { display: none; }
+.totem[data-pantalla="final"] .jarilla { right: auto; left: 2cqw; }
+
+/* Final: logo con fondo y la mutisia más grande sobre su esquina */
+.logo-final { position: relative; width: 80cqw; margin: 0 0 16cqw; }
+.logo-final img { display: block; width: 100%; }
+.logo-final .flor-logo { position: absolute; width: 32cqw; right: -9cqw; top: 70%; }
 
 /* Textos y botones */
 .logo { width: 66cqw; margin: 0 0 10cqw; position: relative; }

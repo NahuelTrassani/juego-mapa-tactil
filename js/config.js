@@ -128,7 +128,10 @@ const CONFIG = {
     { id: "pesca", etiqueta: "Pesca", imagen: "assets/juego/stickers/pesca.webp", region: 6,
       texto: "La pesca con mosca de truchas, como la trucha arcoíris, atrae a pescadores de todo el mundo." },
     { id: "esqui", etiqueta: "Esquí", imagen: "assets/juego/stickers/esqui.webp", region: 7,
-      texto: "En invierno, los centros de esquí reciben a esquiadores y snowboarders de todo el mundo." }
+      texto: "En invierno, los centros de esquí reciben a esquiadores y snowboarders de todo el mundo." },
+    { id: "amancay", etiqueta: "Amancay", imagen: "assets/juego/stickers/amancay.webp", region: 7,
+      texto: "Flor silvestre de pétalos anaranjados, típica de los bosques patagónicos." },
+    { id: "cristo", etiqueta: "Cristo", imagen: "assets/juego/stickers/cristo.webp", region: 7 }
   ],
 
   papelitos: ["#1CEA11", "#2B3E4C", "#F4DFB9", "#02212B", "#FF8C2B", "#2BA6B5"],
