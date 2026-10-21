@@ -62,7 +62,7 @@ const CONFIG = {
         desde: 4,
         hasta: 5,
         titulo: "¡Sabés un montón!",
-        texto: "¡Neuquén no tiene secretos para vos!",
+        texto: "¡Sos un experto en Neuquén!",
       },
     ],
   },
