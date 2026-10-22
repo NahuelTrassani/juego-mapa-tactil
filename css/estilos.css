@@ -65,7 +65,7 @@ img { -webkit-user-drag: none; }
 .totem[data-pantalla="juego"] .deco, .totem[data-pantalla="muestra"] .deco { display: none; }
 .deco img { position: absolute; }
 .nubes { width: 72cqw; }
-.nubes-arriba { top: -3cqw; left: -6cqw; }
+.nubes-arriba { top: 3cqw; left: -6cqw; }
 .nubes-abajo { bottom: -8cqw; left: 14cqw; transform: scaleX(-1); }
 .flor { width: 30cqw; }
 .mutisia { top: 6cqw; right: 2cqw; width: 24cqw; }
