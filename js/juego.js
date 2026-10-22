@@ -180,7 +180,7 @@ function repasarMapa() {
 }
 
 function irAtras() {
-  if (pantallaActual === "muestra") repaso ? irACondiciones() : volverAlInicio();
+  if (pantallaActual === "muestra") volverAlInicio();
   else if (pantallaActual === "condiciones") mostrarMuestra();
   else if (pantallaActual === "juego" && !partida.terminada) repasarMapa();
   else if (pantallaActual === "final") volverAlInicio();
@@ -518,6 +518,7 @@ function activarEsquinaOculta(z, ms, accion) {
   const cortar = () => { clearTimeout(timer); timer = null; z.classList.remove("sosteniendo"); };
   z.addEventListener("pointerdown", (e) => {
     e.stopPropagation();
+    try { z.setPointerCapture(e.pointerId); } catch {}
     z.classList.add("sosteniendo");
     timer = setTimeout(() => { cortar(); accion(); }, ms);
   });
