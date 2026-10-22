@@ -8,6 +8,7 @@ let ultimoToque = Date.now();
 let timers = [];
 let timerTarjeta = null;
 let repaso = false;
+let salirTarjeta = null;
 
 // Timers de la partida: se cancelan todos al volver al inicio
 function programar(fn, ms) {
@@ -306,12 +307,16 @@ function mostrarTarjeta(clase, etiqueta, titulo, texto, fija = false, lectura = 
   t.replaceChildren(...[etiqueta && crear("div", "eti", etiqueta), crear("h3", "", titulo), texto && crear("p", "", texto)].filter(Boolean));
   t.hidden = false;
   clearTimeout(timerTarjeta);
+  salirTarjeta = null;
   if (fija) return;
-  timerTarjeta = setTimeout(() => {
+  salirTarjeta = () => {
+    salirTarjeta = null;
+    clearTimeout(timerTarjeta);
     t.style.setProperty("--salida", `${CONFIG.msTarjetaSalida}ms`);
     t.classList.add("se-va");
     timerTarjeta = setTimeout(() => { t.hidden = true; }, CONFIG.msTarjetaSalida);
-  }, lectura);
+  };
+  timerTarjeta = setTimeout(salirTarjeta, lectura);
 }
 
 function actualizarCuenta() {
@@ -561,5 +566,7 @@ revisarConfig();
 cargarTextos();
 vigilarInactividad();
 $("#atras").addEventListener("click", irAtras);
+// Un toque en el juego saca el cartel sin esperar
+$("#juego").addEventListener("pointerdown", () => salirTarjeta?.());
 activarEsquinaOculta($("#cierre-oculto"), 5000, () => window.close());
 volverAlInicio();
