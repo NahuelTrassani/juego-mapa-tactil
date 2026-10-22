@@ -66,8 +66,7 @@ img { -webkit-user-drag: none; }
 .deco img { position: absolute; }
 .nubes { width: 72cqw; }
 .nubes-arriba { top: 6cqw; left: -6cqw; }
-.nubes-derecha { top: 14cqw; right: -24cqw; display: none; }
-.totem[data-pantalla="final"] .nubes-derecha { display: block; }
+.nubes-derecha { top: 12cqw; right: -16cqw; width: 50cqw; }
 .nubes-abajo { bottom: -8cqw; left: 14cqw; transform: scaleX(-1); }
 .flor { width: 30cqw; }
 .mutisia { top: 6cqw; right: 2cqw; width: 24cqw; }
