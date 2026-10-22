@@ -67,7 +67,7 @@ img { -webkit-user-drag: none; }
 .nubes { width: 72cqw; }
 .nubes-arriba { top: 6cqw; left: -6cqw; }
 .nubes-derecha { top: 12cqw; right: -16cqw; width: 50cqw; }
-.nubes-abajo { bottom: -8cqw; left: 14cqw; transform: scaleX(-1); }
+.nubes-abajo { bottom: -24cqw; left: 14cqw; transform: scaleX(-1); }
 .flor { width: 30cqw; }
 .mutisia { top: 6cqw; right: 2cqw; width: 24cqw; }
 .amancay { bottom: 18cqw; left: 2cqw; width: 28cqw; }

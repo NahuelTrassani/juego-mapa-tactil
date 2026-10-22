@@ -260,7 +260,8 @@ function lugaresLibres(tam, cantidad) {
   const w = tam.width * 1.1, h = tam.height * 1.06;
   const posibles = [];
   const zonas = zonasOcupadas();
-  const limite = zonas.length ? Math.min(...zonas.map(z => z.top)) - tablero.top : tablero.height;
+  // Solo en la parte de arriba del tablero, lejos de la leyenda
+  const limite = Math.min(tablero.height * 0.55, zonas.length ? Math.min(...zonas.map(z => z.top)) - tablero.top : tablero.height);
   for (let y = 0; y + h <= limite; y += PASO) {
     for (let x = tablero.width - w; x >= tablero.width * 0.4; x -= PASO) {
       if (libre(x, y, w, h)) posibles.push({ x, y, w: tam.width, h: tam.height });
